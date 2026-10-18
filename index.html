@@ -3,57 +3,172 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#087f5b">
 <title>DaraBingo</title>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#101827;color:white;text-align:center}
-header{padding:22px;background:#087f5b;font-size:28px;font-weight:bold}
-.card{background:#1d293b;margin:18px auto;padding:20px;border-radius:16px;max-width:440px;width:92%}
-input{display:block;width:100%;padding:12px;margin:10px 0;border-radius:8px;border:1px solid #475569;font-size:16px}
-button{border:0;border-radius:9px;padding:12px 17px;margin:5px;background:#10b981;color:#071a14;font-size:16px;font-weight:bold;cursor:pointer}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#101827;
+  color:white;
+  text-align:center
+}
+header{
+  padding:22px;
+  background:#087f5b;
+  font-size:28px;
+  font-weight:bold
+}
+.card{
+  background:#1d293b;
+  margin:18px auto;
+  padding:20px;
+  border-radius:16px;
+  max-width:440px;
+  width:92%
+}
+input{
+  display:block;
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border-radius:8px;
+  border:1px solid #475569;
+  font-size:16px
+}
+button{
+  border:0;
+  border-radius:9px;
+  padding:12px 17px;
+  margin:5px;
+  background:#10b981;
+  color:#071a14;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer
+}
 button:disabled{opacity:.5}
-.balance{font-size:25px;color:#8fffc2;font-weight:bold}
-.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-top:15px}
-.cell{width:100%;min-width:0;padding:14px 0;margin:0;border-radius:8px;background:#334155;color:white}
-.cell.marked{background:#10b981;color:#061b12}
-.small{color:#bdc8d8;font-size:13px;line-height:1.5}
-#message,#authMessage{min-height:24px;line-height:1.5;overflow-wrap:anywhere}
+.balance{
+  font-size:25px;
+  color:#8fffc2;
+  font-weight:bold
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:7px;
+  margin-top:15px
+}
+.cell{
+  width:100%;
+  min-width:0;
+  padding:14px 0;
+  margin:0;
+  border-radius:8px;
+  background:#334155;
+  color:white
+}
+.cell.marked{
+  background:#10b981;
+  color:#061b12
+}
+.small{
+  color:#bdc8d8;
+  font-size:13px;
+  line-height:1.5
+}
+#message,#authMessage,#dbStatus{
+  min-height:24px;
+  line-height:1.5;
+  overflow-wrap:anywhere
+}
 .hidden{display:none}
+footer{
+  padding:20px;
+  color:#bdc8d8;
+  font-size:12px
+}
 </style>
 </head>
+
 <body>
 <header>🎱 DaraBingo</header>
 
 <div class="card" id="authCard">
   <h2>Welcome to DaraBingo!</h2>
-  <p>Register or sign in with your email.</p>
-  <input id="email" type="email" placeholder="Email address" autocomplete="email">
-  <input id="password" type="password" placeholder="Password (at least 6 characters)" autocomplete="current-password">
+  <p>Create an account or log in.</p>
+
+  <input
+    id="email"
+    type="email"
+    placeholder="Email address"
+    autocomplete="email"
+  >
+
+  <input
+    id="password"
+    type="password"
+    placeholder="Password (at least 6 characters)"
+    autocomplete="current-password"
+  >
+
   <button id="signupBtn">Sign Up</button>
   <button id="loginBtn">Login</button>
+
   <p id="authMessage" class="small" role="status"></p>
 </div>
 
 <div class="card hidden" id="gameArea">
   <h2 id="welcome"></h2>
+
   <button id="logoutBtn">Logout</button>
-  <p>Play Bingo • Have fun</p>
+
+  <p>Play Bingo • Have fun!</p>
+
   <p>Demo balance</p>
   <div class="balance">100 ETB (Demo)</div>
-  <p class="small">Demo credits only. No real money is accepted or paid.</p>
+
+  <p class="small">
+    Demo credits only. No real money is accepted or paid.
+  </p>
 
   <h2>Your Bingo Card</h2>
   <div id="grid" class="grid"></div>
+
   <button id="newCardBtn">New Card</button>
   <button id="checkBtn">Check Bingo</button>
-  <p id="message" role="status">Tap numbers to mark them.</p>
+
+  <p id="message" role="status">
+    Tap numbers to mark them.
+  </p>
+
+  <p id="dbStatus" class="small">
+    Checking database connection...
+  </p>
+
   <h3>How to Play</h3>
-  <p class="small">Mark five numbers in a row, column, or diagonal. The FREE center square counts automatically.</p>
-  <p class="small">This is a demo game. It does not connect to other players, process payments, or award real-money prizes.</p>
+  <p class="small">
+    Mark five numbers in a row, column, or diagonal.
+    The FREE center square counts automatically.
+  </p>
+
+  <p class="small">
+    This is a demo game. Multiplayer and real-money
+    payments are not enabled.
+  </p>
 </div>
 
+<footer>
+  DaraBingo © 2026
+</footer>
+
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -61,6 +176,15 @@ import {
   signOut,
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+
+import {
+  getDatabase,
+  ref,
+  get,
+  set,
+  update
+} from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyCvFGMyHt3Z15DkXjgP0bRwzcOR22kzy5o",
@@ -74,129 +198,349 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getDatabase(app);
 
 const authCard = document.getElementById("authCard");
 const gameArea = document.getElementById("gameArea");
 const authMessage = document.getElementById("authMessage");
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
+const dbStatus = document.getElementById("dbStatus");
+const message = document.getElementById("message");
+
+let currentUser = null;
+let selected = new Set();
+let numbers = [];
+let databaseReady = false;
+
 
 function showAuthError(error) {
   const messages = {
-    "auth/email-already-in-use": "This email is already registered. Please log in.",
-    "auth/invalid-email": "Please enter a valid email address.",
-    "auth/weak-password": "Password must be at least 6 characters.",
-    "auth/invalid-credential": "Incorrect email or password.",
-    "auth/too-many-requests": "Too many attempts. Please try again later.",
-    "auth/network-request-failed": "Network error. Check your internet connection."
+    "auth/email-already-in-use":
+      "This email is already registered. Please log in.",
+    "auth/invalid-email":
+      "Please enter a valid email address.",
+    "auth/weak-password":
+      "Password must be at least 6 characters.",
+    "auth/invalid-credential":
+      "Incorrect email or password.",
+    "auth/too-many-requests":
+      "Too many attempts. Please try again later.",
+    "auth/network-request-failed":
+      "Network error. Check your internet connection."
   };
-  authMessage.textContent = messages[error.code] || "Error: " + error.message;
+
+  authMessage.textContent =
+    messages[error.code] || "Error: " + error.message;
 }
 
-document.getElementById("signupBtn").addEventListener("click", async () => {
+
+function setBusy(busy) {
+  document.getElementById("signupBtn").disabled = busy;
+  document.getElementById("loginBtn").disabled = busy;
+}
+
+
+document.getElementById("signupBtn")
+.addEventListener("click", async () => {
   const email = emailInput.value.trim();
   const password = passwordInput.value;
 
   if (!email || !password) {
-    authMessage.textContent = "Enter your email and password.";
+    authMessage.textContent =
+      "Enter your email and password.";
     return;
   }
 
   authMessage.textContent = "Creating your account...";
+  setBusy(true);
+
   try {
-    await createUserWithEmailAndPassword(auth, email, password);
-    authMessage.textContent = "Account created successfully!";
+    await createUserWithEmailAndPassword(
+      auth, email, password
+    );
+    authMessage.textContent =
+      "Account created successfully!";
   } catch (error) {
     showAuthError(error);
+  } finally {
+    setBusy(false);
   }
 });
 
-document.getElementById("loginBtn").addEventListener("click", async () => {
+
+document.getElementById("loginBtn")
+.addEventListener("click", async () => {
   const email = emailInput.value.trim();
   const password = passwordInput.value;
 
   if (!email || !password) {
-    authMessage.textContent = "Enter your email and password.";
+    authMessage.textContent =
+      "Enter your email and password.";
     return;
   }
 
   authMessage.textContent = "Signing in...";
+  setBusy(true);
+
   try {
-    await signInWithEmailAndPassword(auth, email, password);
+    await signInWithEmailAndPassword(
+      auth, email, password
+    );
   } catch (error) {
     showAuthError(error);
+  } finally {
+    setBusy(false);
   }
 });
 
-document.getElementById("logoutBtn").addEventListener("click", async () => {
+
+document.getElementById("logoutBtn")
+.addEventListener("click", async () => {
   try {
     await signOut(auth);
   } catch (error) {
-    document.getElementById("message").textContent = "Could not log out. Please try again.";
+    message.textContent =
+      "Could not log out. Please try again.";
   }
 });
 
-onAuthStateChanged(auth, user => {
+
+/* Save player profile under this player's own UID. */
+async function savePlayerProfile(user) {
+  const profileRef = ref(
+    db, "users/" + user.uid + "/profile"
+  );
+
+  try {
+    const result = await get(profileRef);
+
+    if (!result.exists()) {
+      await set(profileRef, {
+        email: user.email || "",
+        createdAt: Date.now()
+      });
+    } else {
+      await update(profileRef, {
+        email: user.email || "",
+        lastLoginAt: Date.now()
+      });
+    }
+
+    databaseReady = true;
+    dbStatus.textContent =
+      "Database connected. Player profile saved.";
+    return true;
+
+  } catch (error) {
+    databaseReady = false;
+    dbStatus.textContent =
+      "Database access is blocked. We need to configure secure Firebase Rules.";
+    console.warn("Profile could not be saved:", error);
+    return false;
+  }
+}
+
+
+/* Save the current player's Bingo card and marked squares. */
+async function saveGame() {
+  if (!currentUser || numbers.length !== 25) return;
+
+  const gameRef = ref(
+    db, "users/" + currentUser.uid + "/game"
+  );
+
+  try {
+    await set(gameRef, {
+      numbers: numbers,
+      selected: Array.from(selected),
+      updatedAt: Date.now()
+    });
+
+    databaseReady = true;
+    dbStatus.textContent =
+      "Game saved to Firebase Database.";
+  } catch (error) {
+    databaseReady = false;
+    dbStatus.textContent =
+      "Game not saved yet. Secure Database Rules must be configured.";
+    console.warn("Game could not be saved:", error);
+  }
+}
+
+
+/* Restore a previously saved card for this player. */
+async function loadGame() {
+  if (!currentUser) return false;
+
+  try {
+    const result = await get(
+      ref(db, "users/" + currentUser.uid + "/game")
+    );
+
+    if (!result.exists()) return false;
+
+    const saved = result.val();
+
+    if (
+      !Array.isArray(saved.numbers) ||
+      saved.numbers.length !== 25
+    ) {
+      return false;
+    }
+
+    numbers = saved.numbers;
+
+    selected = new Set(
+      Array.isArray(saved.selected)
+        ? saved.selected.filter(
+            i => Number.isInteger(i) && i >= 0 && i < 25 && i !== 12
+          )
+        : []
+    );
+
+    numbers[12] = "FREE";
+    render();
+
+    message.textContent = "Your saved Bingo card is ready.";
+    dbStatus.textContent =
+      "Saved game loaded from Firebase Database.";
+
+    return true;
+
+  } catch (error) {
+    console.warn("Saved game could not be loaded:", error);
+    dbStatus.textContent =
+      "Database access is blocked. Configure secure Firebase Rules next.";
+    return false;
+  }
+}
+
+
+/* Show the game after Firebase confirms the signed-in user. */
+onAuthStateChanged(auth, async user => {
+  currentUser = user;
+
   authCard.classList.toggle("hidden", !!user);
   gameArea.classList.toggle("hidden", !user);
-  if (user) {
-    document.getElementById("welcome").textContent = "Welcome, " + user.email;
-    authMessage.textContent = "";
-    newCard();
+
+  if (!user) {
+    numbers = [];
+    selected.clear();
+    return;
+  }
+
+  document.getElementById("welcome").textContent =
+    "Welcome, " + (user.email || "Player");
+
+  authMessage.textContent = "";
+  dbStatus.textContent = "Connecting to database...";
+
+  await savePlayerProfile(user);
+
+  const restored = await loadGame();
+
+  if (!restored) {
+    newCard(false);
   }
 });
 
-let selected = new Set();
-let numbers = [];
 
-function newCard() {
+function newCard(save = true) {
   selected.clear();
   numbers = [];
+
   while (numbers.length < 25) {
     const n = Math.floor(Math.random() * 75) + 1;
-    if (!numbers.includes(n)) numbers.push(n);
+
+    if (!numbers.includes(n)) {
+      numbers.push(n);
+    }
   }
+
   numbers[12] = "FREE";
+
   render();
-  document.getElementById("message").textContent = "New card ready! Mark your numbers.";
+
+  message.textContent =
+    "New card ready! Mark your numbers.";
+
+  if (save) saveGame();
 }
+
 
 function render() {
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
+
   numbers.forEach((n, i) => {
     const cell = document.createElement("button");
-    cell.className = "cell" + (selected.has(i) || n === "FREE" ? " marked" : "");
+
+    cell.className =
+      "cell" +
+      (selected.has(i) || n === "FREE" ? " marked" : "");
+
     cell.textContent = n;
-    cell.setAttribute("aria-pressed", String(selected.has(i) || n === "FREE"));
+
+    cell.setAttribute(
+      "aria-pressed",
+      String(selected.has(i) || n === "FREE")
+    );
+
     cell.onclick = () => {
       if (n === "FREE") return;
-      if (selected.has(i)) selected.delete(i);
-      else selected.add(i);
+
+      if (selected.has(i)) {
+        selected.delete(i);
+      } else {
+        selected.add(i);
+      }
+
       render();
+      saveGame();
     };
+
     grid.appendChild(cell);
   });
 }
 
+
 function checkBingo() {
   const lines = [];
+
   for (let r = 0; r < 5; r++) {
-    lines.push([0,1,2,3,4].map(c => r * 5 + c));
+    lines.push(
+      [0,1,2,3,4].map(c => r * 5 + c)
+    );
   }
+
   for (let c = 0; c < 5; c++) {
-    lines.push([0,1,2,3,4].map(r => r * 5 + c));
+    lines.push(
+      [0,1,2,3,4].map(r => r * 5 + c)
+    );
   }
+
   lines.push([0,6,12,18,24]);
   lines.push([4,8,12,16,20]);
 
-  const win = lines.some(line => line.every(i => i === 12 || selected.has(i)));
-  document.getElementById("message").textContent =
-    win ? "🎉 Bingo! Demo win!" : "Not yet. Keep playing!";
+  const win = lines.some(line =>
+    line.every(i => i === 12 || selected.has(i))
+  );
+
+  message.textContent = win
+    ? "🎉 Bingo! Demo win!"
+    : "Not yet. Keep playing!";
+
+  saveGame();
 }
 
-document.getElementById("newCardBtn").addEventListener("click", newCard);
-document.getElementById("checkBtn").addEventListener("click", checkBingo);
+
+document.getElementById("newCardBtn")
+.addEventListener("click", () => newCard());
+
+document.getElementById("checkBtn")
+.addEventListener("click", checkBingo);
+
 </script>
 </body>
 </html>
