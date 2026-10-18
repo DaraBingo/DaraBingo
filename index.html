@@ -4,78 +4,235 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DaraBingo</title>
+
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#101827;color:white;text-align:center}
-header{padding:22px;background:#087f5b;font-size:28px;font-weight:bold}
-.card{background:#1d293b;margin:18px auto;padding:20px;border-radius:16px;max-width:440px;width:92%}
-.balance{font-size:25px;color:#8fffc2;font-weight:bold}
-button{border:0;border-radius:9px;padding:12px 17px;margin:5px;background:#10b981;color:#071a14;font-size:16px;font-weight:bold}
-button:disabled{opacity:.45}
-.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-top:15px}
-.cell{padding:12px 0;border-radius:8px;background:#334155;font-weight:bold}
-.cell.marked{background:#10b981;color:#061b12}
-.small{color:#bdc8d8;font-size:13px;line-height:1.5}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#101827;
+  color:white;
+  text-align:center
+}
+header{
+  padding:22px;
+  background:#087f5b;
+  font-size:28px;
+  font-weight:bold
+}
+.card{
+  background:#1d293b;
+  margin:18px auto;
+  padding:20px;
+  border-radius:16px;
+  max-width:440px;
+  width:92%
+}
+.balance{
+  font-size:25px;
+  color:#8fffc2;
+  font-weight:bold
+}
+button{
+  border:0;
+  border-radius:9px;
+  padding:12px 17px;
+  margin:5px;
+  background:#10b981;
+  color:#071a14;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:7px;
+  margin-top:15px
+}
+.cell{
+  padding:12px 0;
+  border-radius:8px;
+  background:#334155;
+  font-weight:bold
+}
+.cell.marked{
+  background:#10b981;
+  color:#061b12
+}
+.small{
+  color:#bdc8d8;
+  font-size:13px;
+  line-height:1.5
+}
+.agent{
+  color:#8fffc2;
+  font-weight:bold;
+  overflow-wrap:anywhere
+}
 </style>
 </head>
+
 <body>
+
 <header>🎱 DaraBingo</header>
+
 <div class="card">
-<h2>Welcome to DaraBingo!</h2>
-<p>Play Bingo • Collect points • Have fun</p>
-<p>Demo balance</p>
-<div class="balance" id="balance">100 ETB (Demo)</div>
-<p class="small">Demo credits only. No real money is accepted or paid.</p>
+  <h2>Welcome to DaraBingo!</h2>
+  <p>Play Bingo • Collect points • Have fun</p>
+  <p>Demo balance</p>
+  <div class="balance">100 ETB (Demo)</div>
+  <p class="small">
+    Demo credits only. No real money is accepted or paid.
+  </p>
 </div>
+
 <div class="card">
-<h2>Your Bingo Card</h2>
-<div id="grid" class="grid"></div>
-<button onclick="newCard()">New Card</button>
-<button onclick="checkBingo()">Check Bingo</button>
-<p id="message">Tap numbers to mark them.</p>
+  <h2>🤝 Agent Referral</h2>
+  <p>Your referral code:</p>
+  <div class="agent" id="agentCode">AGT001</div>
+
+  <p class="small">Your referral link:</p>
+  <div class="agent" id="referralLink"></div>
+
+  <button onclick="copyReferral()">📋 Copy Referral Link</button>
+  <button onclick="shareTelegram()">📲 Share on Telegram</button>
+
+  <p id="shareMessage" class="small"></p>
 </div>
+
 <div class="card">
-<h3>How to play</h3>
-<p class="small">Mark five numbers in a row, column, or diagonal. This demo does not connect to other players or process payments.</p>
+  <h2>Your Bingo Card</h2>
+  <div id="grid" class="grid"></div>
+  <button onclick="newCard()">New Card</button>
+  <button onclick="checkBingo()">Check Bingo</button>
+  <p id="message">Tap numbers to mark them.</p>
 </div>
+
+<div class="card">
+  <h3>How to play</h3>
+  <p class="small">
+    Mark five numbers in a row, column, or diagonal.
+    This is a demo and does not connect to other players
+    or process payments.
+  </p>
+</div>
+
 <script>
+/* AGENT REFERRAL */
+const params = new URLSearchParams(window.location.search);
+const incomingCode = params.get("ref");
+
+const validAgentCodes = ["AGT001"];
+const agentCode = validAgentCodes.includes(incomingCode)
+  ? incomingCode
+  : "AGT001";
+
+const referralUrl =
+  window.location.origin +
+  window.location.pathname +
+  "?ref=" + encodeURIComponent(agentCode);
+
+document.getElementById("agentCode").textContent = agentCode;
+document.getElementById("referralLink").textContent = referralUrl;
+
+async function copyReferral() {
+  const message = document.getElementById("shareMessage");
+
+  try {
+    await navigator.clipboard.writeText(referralUrl);
+    message.textContent = "Referral link copied!";
+  } catch (error) {
+    message.textContent =
+      "Copy this link: " + referralUrl;
+  }
+}
+
+function shareTelegram() {
+  const text =
+    "Join DaraBingo using my referral link: " + referralUrl;
+
+  const telegramUrl =
+    "https://t.me/share/url?url=" +
+    encodeURIComponent(referralUrl) +
+    "&text=" +
+    encodeURIComponent(text);
+
+  window.open(telegramUrl, "_blank");
+}
+
+/* BINGO DEMO GAME */
 let selected = new Set();
 let numbers = [];
-function newCard(){
+
+function newCard() {
   selected.clear();
   numbers = [];
-  while(numbers.length < 25){
-    const n = Math.floor(Math.random()*75)+1;
-    if(!numbers.includes(n)) numbers.push(n);
+
+  while (numbers.length < 25) {
+    const n = Math.floor(Math.random() * 75) + 1;
+    if (!numbers.includes(n)) numbers.push(n);
   }
+
   numbers[12] = "FREE";
   render();
-  document.getElementById("message").textContent="New card ready!";
+
+  document.getElementById("message").textContent =
+    "New card ready!";
 }
-function render(){
+
+function render() {
   const grid = document.getElementById("grid");
-  grid.innerHTML="";
-  numbers.forEach((n,i)=>{
-    const cell=document.createElement("button");
-    cell.className="cell"+(selected.has(i)||n==="FREE"?" marked":"");
-    cell.textContent=n;
-    cell.onclick=()=>{
-      if(n==="FREE") return;
-      if(selected.has(i)) selected.delete(i); else selected.add(i);
+  grid.innerHTML = "";
+
+  numbers.forEach((n, i) => {
+    const cell = document.createElement("button");
+
+    cell.className =
+      "cell" +
+      (selected.has(i) || n === "FREE" ? " marked" : "");
+
+    cell.textContent = n;
+
+    cell.onclick = () => {
+      if (n === "FREE") return;
+
+      if (selected.has(i)) {
+        selected.delete(i);
+      } else {
+        selected.add(i);
+      }
+
       render();
     };
+
     grid.appendChild(cell);
   });
 }
-function checkBingo(){
-  const lines=[];
-  for(let r=0;r<5;r++) lines.push([0,1,2,3,4].map(c=>r*5+c));
-  for(let c=0;c<5;c++) lines.push([0,1,2,3,4].map(r=>r*5+c));
-  lines.push([0,6,12,18,24],[4,8,12,16,20]);
-  const win=lines.some(line=>line.every(i=>i===12||selected.has(i)));
-  document.getElementById("message").textContent=win?"🎉 Bingo! Demo win!":"Not yet. Keep playing!";
+
+function checkBingo() {
+  const lines = [];
+
+  for (let r = 0; r < 5; r++) {
+    lines.push([0,1,2,3,4].map(c => r * 5 + c));
+  }
+
+  for (let c = 0; c < 5; c++) {
+    lines.push([0,1,2,3,4].map(r => r * 5 + c));
+  }
+
+  lines.push([0,6,12,18,24], [4,8,12,16,20]);
+
+  const win = lines.some(line =>
+    line.every(i => i === 12 || selected.has(i))
+  );
+
+  document.getElementById("message").textContent =
+    win ? "🎉 Bingo! Demo win!" : "Not yet. Keep playing!";
 }
+
 newCard();
 </script>
+
 </body>
 </html>
