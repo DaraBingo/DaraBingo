@@ -51,10 +51,13 @@ button{
   margin-top:15px
 }
 .cell{
-  padding:12px 0;
+  width:100%;
+  min-width:0;
+  padding:14px 0;
+  margin:0;
   border-radius:8px;
   background:#334155;
-  font-weight:bold
+  color:white
 }
 .cell.marked{
   background:#10b981;
@@ -65,10 +68,9 @@ button{
   font-size:13px;
   line-height:1.5
 }
-.agent{
-  color:#8fffc2;
-  font-weight:bold;
-  overflow-wrap:anywhere
+#message{
+  min-height:24px;
+  line-height:1.5
 }
 </style>
 </head>
@@ -88,100 +90,52 @@ button{
 </div>
 
 <div class="card">
-  <h2>🤝 Agent Referral</h2>
-  <p>Your referral code:</p>
-  <div class="agent" id="agentCode">AGT001</div>
-
-  <p class="small">Your referral link:</p>
-  <div class="agent" id="referralLink"></div>
-
-  <button onclick="copyReferral()">📋 Copy Referral Link</button>
-  <button onclick="shareTelegram()">📲 Share on Telegram</button>
-
-  <p id="shareMessage" class="small"></p>
-</div>
-
-<div class="card">
   <h2>Your Bingo Card</h2>
   <div id="grid" class="grid"></div>
+
   <button onclick="newCard()">New Card</button>
   <button onclick="checkBingo()">Check Bingo</button>
+
   <p id="message">Tap numbers to mark them.</p>
 </div>
 
 <div class="card">
-  <h3>How to play</h3>
+  <h3>How to Play</h3>
   <p class="small">
     Mark five numbers in a row, column, or diagonal.
-    This is a demo and does not connect to other players
-    or process payments.
+    The FREE center square counts automatically.
+  </p>
+  <p class="small">
+    This is a demo game. It does not connect to other players,
+    process payments, or award real-money prizes.
   </p>
 </div>
 
 <script>
-/* AGENT REFERRAL */
-const params = new URLSearchParams(window.location.search);
-const incomingCode = params.get("ref");
-
-const validAgentCodes = ["AGT001"];
-const agentCode = validAgentCodes.includes(incomingCode)
-  ? incomingCode
-  : "AGT001";
-
-const referralUrl =
-  window.location.origin +
-  window.location.pathname +
-  "?ref=" + encodeURIComponent(agentCode);
-
-document.getElementById("agentCode").textContent = agentCode;
-document.getElementById("referralLink").textContent = referralUrl;
-
-async function copyReferral() {
-  const message = document.getElementById("shareMessage");
-
-  try {
-    await navigator.clipboard.writeText(referralUrl);
-    message.textContent = "Referral link copied!";
-  } catch (error) {
-    message.textContent =
-      "Copy this link: " + referralUrl;
-  }
-}
-
-function shareTelegram() {
-  const text =
-    "Join DaraBingo using my referral link: " + referralUrl;
-
-  const telegramUrl =
-    "https://t.me/share/url?url=" +
-    encodeURIComponent(referralUrl) +
-    "&text=" +
-    encodeURIComponent(text);
-
-  window.open(telegramUrl, "_blank");
-}
-
-/* BINGO DEMO GAME */
 let selected = new Set();
 let numbers = [];
 
-function newCard() {
+function newCard(){
   selected.clear();
   numbers = [];
 
-  while (numbers.length < 25) {
+  while(numbers.length < 25){
     const n = Math.floor(Math.random() * 75) + 1;
-    if (!numbers.includes(n)) numbers.push(n);
+
+    if(!numbers.includes(n)){
+      numbers.push(n);
+    }
   }
 
   numbers[12] = "FREE";
+
   render();
 
   document.getElementById("message").textContent =
-    "New card ready!";
+    "New card ready! Mark your numbers.";
 }
 
-function render() {
+function render(){
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
 
@@ -189,17 +143,16 @@ function render() {
     const cell = document.createElement("button");
 
     cell.className =
-      "cell" +
-      (selected.has(i) || n === "FREE" ? " marked" : "");
+      "cell" + (selected.has(i) || n === "FREE" ? " marked" : "");
 
     cell.textContent = n;
 
     cell.onclick = () => {
-      if (n === "FREE") return;
+      if(n === "FREE") return;
 
-      if (selected.has(i)) {
+      if(selected.has(i)){
         selected.delete(i);
-      } else {
+      }else{
         selected.add(i);
       }
 
@@ -210,25 +163,28 @@ function render() {
   });
 }
 
-function checkBingo() {
+function checkBingo(){
   const lines = [];
 
-  for (let r = 0; r < 5; r++) {
+  for(let r = 0; r < 5; r++){
     lines.push([0,1,2,3,4].map(c => r * 5 + c));
   }
 
-  for (let c = 0; c < 5; c++) {
+  for(let c = 0; c < 5; c++){
     lines.push([0,1,2,3,4].map(r => r * 5 + c));
   }
 
-  lines.push([0,6,12,18,24], [4,8,12,16,20]);
+  lines.push([0,6,12,18,24]);
+  lines.push([4,8,12,16,20]);
 
   const win = lines.some(line =>
     line.every(i => i === 12 || selected.has(i))
   );
 
   document.getElementById("message").textContent =
-    win ? "🎉 Bingo! Demo win!" : "Not yet. Keep playing!";
+    win
+      ? "🎉 Bingo! Demo win!"
+      : "Not yet. Keep playing!";
 }
 
 newCard();
