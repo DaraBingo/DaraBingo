@@ -4,191 +4,199 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DaraBingo</title>
-
 <style>
 *{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:#101827;
-  color:white;
-  text-align:center
-}
-header{
-  padding:22px;
-  background:#087f5b;
-  font-size:28px;
-  font-weight:bold
-}
-.card{
-  background:#1d293b;
-  margin:18px auto;
-  padding:20px;
-  border-radius:16px;
-  max-width:440px;
-  width:92%
-}
-.balance{
-  font-size:25px;
-  color:#8fffc2;
-  font-weight:bold
-}
-button{
-  border:0;
-  border-radius:9px;
-  padding:12px 17px;
-  margin:5px;
-  background:#10b981;
-  color:#071a14;
-  font-size:16px;
-  font-weight:bold;
-  cursor:pointer
-}
-.grid{
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  gap:7px;
-  margin-top:15px
-}
-.cell{
-  width:100%;
-  min-width:0;
-  padding:14px 0;
-  margin:0;
-  border-radius:8px;
-  background:#334155;
-  color:white
-}
-.cell.marked{
-  background:#10b981;
-  color:#061b12
-}
-.small{
-  color:#bdc8d8;
-  font-size:13px;
-  line-height:1.5
-}
-#message{
-  min-height:24px;
-  line-height:1.5
-}
+body{margin:0;font-family:Arial,sans-serif;background:#101827;color:white;text-align:center}
+header{padding:22px;background:#087f5b;font-size:28px;font-weight:bold}
+.card{background:#1d293b;margin:18px auto;padding:20px;border-radius:16px;max-width:440px;width:92%}
+input{display:block;width:100%;padding:12px;margin:10px 0;border-radius:8px;border:1px solid #475569;font-size:16px}
+button{border:0;border-radius:9px;padding:12px 17px;margin:5px;background:#10b981;color:#071a14;font-size:16px;font-weight:bold;cursor:pointer}
+button:disabled{opacity:.5}
+.balance{font-size:25px;color:#8fffc2;font-weight:bold}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-top:15px}
+.cell{width:100%;min-width:0;padding:14px 0;margin:0;border-radius:8px;background:#334155;color:white}
+.cell.marked{background:#10b981;color:#061b12}
+.small{color:#bdc8d8;font-size:13px;line-height:1.5}
+#message,#authMessage{min-height:24px;line-height:1.5;overflow-wrap:anywhere}
+.hidden{display:none}
 </style>
 </head>
-
 <body>
-
 <header>🎱 DaraBingo</header>
 
-<div class="card">
+<div class="card" id="authCard">
   <h2>Welcome to DaraBingo!</h2>
-  <p>Play Bingo • Collect points • Have fun</p>
+  <p>Register or sign in with your email.</p>
+  <input id="email" type="email" placeholder="Email address" autocomplete="email">
+  <input id="password" type="password" placeholder="Password (at least 6 characters)" autocomplete="current-password">
+  <button id="signupBtn">Sign Up</button>
+  <button id="loginBtn">Login</button>
+  <p id="authMessage" class="small" role="status"></p>
+</div>
+
+<div class="card hidden" id="gameArea">
+  <h2 id="welcome"></h2>
+  <button id="logoutBtn">Logout</button>
+  <p>Play Bingo • Have fun</p>
   <p>Demo balance</p>
   <div class="balance">100 ETB (Demo)</div>
-  <p class="small">
-    Demo credits only. No real money is accepted or paid.
-  </p>
-</div>
+  <p class="small">Demo credits only. No real money is accepted or paid.</p>
 
-<div class="card">
   <h2>Your Bingo Card</h2>
   <div id="grid" class="grid"></div>
-
-  <button onclick="newCard()">New Card</button>
-  <button onclick="checkBingo()">Check Bingo</button>
-
-  <p id="message">Tap numbers to mark them.</p>
-</div>
-
-<div class="card">
+  <button id="newCardBtn">New Card</button>
+  <button id="checkBtn">Check Bingo</button>
+  <p id="message" role="status">Tap numbers to mark them.</p>
   <h3>How to Play</h3>
-  <p class="small">
-    Mark five numbers in a row, column, or diagonal.
-    The FREE center square counts automatically.
-  </p>
-  <p class="small">
-    This is a demo game. It does not connect to other players,
-    process payments, or award real-money prizes.
-  </p>
+  <p class="small">Mark five numbers in a row, column, or diagonal. The FREE center square counts automatically.</p>
+  <p class="small">This is a demo game. It does not connect to other players, process payments, or award real-money prizes.</p>
 </div>
 
-<script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCvFGMyHt3Z15DkXjgP0bRwzcOR22kzy5o",
+  authDomain: "darabingo.firebaseapp.com",
+  databaseURL: "https://darabingo-default-rtdb.firebaseio.com",
+  projectId: "darabingo",
+  storageBucket: "darabingo.firebasestorage.app",
+  messagingSenderId: "602699715656",
+  appId: "1:602699715656:web:b20a1380d030dc7e75b47d"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+const authCard = document.getElementById("authCard");
+const gameArea = document.getElementById("gameArea");
+const authMessage = document.getElementById("authMessage");
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+
+function showAuthError(error) {
+  const messages = {
+    "auth/email-already-in-use": "This email is already registered. Please log in.",
+    "auth/invalid-email": "Please enter a valid email address.",
+    "auth/weak-password": "Password must be at least 6 characters.",
+    "auth/invalid-credential": "Incorrect email or password.",
+    "auth/too-many-requests": "Too many attempts. Please try again later.",
+    "auth/network-request-failed": "Network error. Check your internet connection."
+  };
+  authMessage.textContent = messages[error.code] || "Error: " + error.message;
+}
+
+document.getElementById("signupBtn").addEventListener("click", async () => {
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+
+  if (!email || !password) {
+    authMessage.textContent = "Enter your email and password.";
+    return;
+  }
+
+  authMessage.textContent = "Creating your account...";
+  try {
+    await createUserWithEmailAndPassword(auth, email, password);
+    authMessage.textContent = "Account created successfully!";
+  } catch (error) {
+    showAuthError(error);
+  }
+});
+
+document.getElementById("loginBtn").addEventListener("click", async () => {
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+
+  if (!email || !password) {
+    authMessage.textContent = "Enter your email and password.";
+    return;
+  }
+
+  authMessage.textContent = "Signing in...";
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch (error) {
+    showAuthError(error);
+  }
+});
+
+document.getElementById("logoutBtn").addEventListener("click", async () => {
+  try {
+    await signOut(auth);
+  } catch (error) {
+    document.getElementById("message").textContent = "Could not log out. Please try again.";
+  }
+});
+
+onAuthStateChanged(auth, user => {
+  authCard.classList.toggle("hidden", !!user);
+  gameArea.classList.toggle("hidden", !user);
+  if (user) {
+    document.getElementById("welcome").textContent = "Welcome, " + user.email;
+    authMessage.textContent = "";
+    newCard();
+  }
+});
+
 let selected = new Set();
 let numbers = [];
 
-function newCard(){
+function newCard() {
   selected.clear();
   numbers = [];
-
-  while(numbers.length < 25){
+  while (numbers.length < 25) {
     const n = Math.floor(Math.random() * 75) + 1;
-
-    if(!numbers.includes(n)){
-      numbers.push(n);
-    }
+    if (!numbers.includes(n)) numbers.push(n);
   }
-
   numbers[12] = "FREE";
-
   render();
-
-  document.getElementById("message").textContent =
-    "New card ready! Mark your numbers.";
+  document.getElementById("message").textContent = "New card ready! Mark your numbers.";
 }
 
-function render(){
+function render() {
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
-
   numbers.forEach((n, i) => {
     const cell = document.createElement("button");
-
-    cell.className =
-      "cell" + (selected.has(i) || n === "FREE" ? " marked" : "");
-
+    cell.className = "cell" + (selected.has(i) || n === "FREE" ? " marked" : "");
     cell.textContent = n;
-
+    cell.setAttribute("aria-pressed", String(selected.has(i) || n === "FREE"));
     cell.onclick = () => {
-      if(n === "FREE") return;
-
-      if(selected.has(i)){
-        selected.delete(i);
-      }else{
-        selected.add(i);
-      }
-
+      if (n === "FREE") return;
+      if (selected.has(i)) selected.delete(i);
+      else selected.add(i);
       render();
     };
-
     grid.appendChild(cell);
   });
 }
 
-function checkBingo(){
+function checkBingo() {
   const lines = [];
-
-  for(let r = 0; r < 5; r++){
+  for (let r = 0; r < 5; r++) {
     lines.push([0,1,2,3,4].map(c => r * 5 + c));
   }
-
-  for(let c = 0; c < 5; c++){
+  for (let c = 0; c < 5; c++) {
     lines.push([0,1,2,3,4].map(r => r * 5 + c));
   }
-
   lines.push([0,6,12,18,24]);
   lines.push([4,8,12,16,20]);
 
-  const win = lines.some(line =>
-    line.every(i => i === 12 || selected.has(i))
-  );
-
+  const win = lines.some(line => line.every(i => i === 12 || selected.has(i)));
   document.getElementById("message").textContent =
-    win
-      ? "🎉 Bingo! Demo win!"
-      : "Not yet. Keep playing!";
+    win ? "🎉 Bingo! Demo win!" : "Not yet. Keep playing!";
 }
 
-newCard();
+document.getElementById("newCardBtn").addEventListener("click", newCard);
+document.getElementById("checkBtn").addEventListener("click", checkBingo);
 </script>
-
 </body>
 </html>
