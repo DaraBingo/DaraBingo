@@ -305,7 +305,6 @@ document.getElementById("logoutBtn")
   }
 });
 
-/* Save player profile under this player's own UID. */
 async function savePlayerProfile(user) {
   const profileRef = ref(
     db, "users/" + user.uid + "/profile"
@@ -319,28 +318,23 @@ async function savePlayerProfile(user) {
 
   try {
     await set(profileRef, profile);
+
     databaseReady = true;
 
-    if (dbStatus) {
-      dbStatus.textContent = "Database connected successfully.";
-    }
+    dbStatus.textContent =
+      "Player profile saved successfully.";
+
   } catch (error) {
     databaseReady = false;
 
     console.error(
-  "Database profile save failed:",
-  error.code,
-  error.message
-);
+      "Database profile save failed:",
+      error.code,
+      error.message
+    );
 
-if (dbStatus) {
-  dbStatus.textContent =
-    "Database error: " + error.code;
-}
-    if (dbStatus) {
-      dbStatus.textContent =
-        "Database access is blocked. Check Firebase Rules.";
-    }
+    dbStatus.textContent =
+      "Profile error: " + error.code;
   }
 }
 /* Save the current player's Bingo card and marked squares. */
