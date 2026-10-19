@@ -327,8 +327,16 @@ async function savePlayerProfile(user) {
   } catch (error) {
     databaseReady = false;
 
-    console.error("Database profile save failed:", error);
+    console.error(
+  "Database profile save failed:",
+  error.code,
+  error.message
+);
 
+if (dbStatus) {
+  dbStatus.textContent =
+    "Database error: " + error.code;
+}
     if (dbStatus) {
       dbStatus.textContent =
         "Database access is blocked. Check Firebase Rules.";
