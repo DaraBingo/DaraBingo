@@ -305,43 +305,36 @@ document.getElementById("logoutBtn")
   }
 });
 
-
 /* Save player profile under this player's own UID. */
 async function savePlayerProfile(user) {
   const profileRef = ref(
     db, "users/" + user.uid + "/profile"
   );
 
+  const profile = {
+    uid: user.uid,
+    email: user.email || "",
+    updatedAt: Date.now()
+  };
+
   try {
-    const result = await get(profileRef);
-
-    if (!result.exists()) {
-      await set(profileRef, {
-        email: user.email || "",
-        createdAt: Date.now()
-      });
-    } else {
-      await update(profileRef, {
-        email: user.email || "",
-        lastLoginAt: Date.now()
-      });
-    }
-
+    await set(profileRef, profile);
     databaseReady = true;
-    dbStatus.textContent =
-      "Database connected. Player profile saved.";
-    return true;
 
+    if (dbStatus) {
+      dbStatus.textContent = "Database connected successfully.";
+    }
   } catch (error) {
     databaseReady = false;
-    dbStatus.textContent =
-      "Database access is blocked. We need to configure secure Firebase Rules.";
-    console.warn("Profile could not be saved:", error);
-    return false;
+
+    console.error("Database profile save failed:", error);
+
+    if (dbStatus) {
+      dbStatus.textContent =
+        "Database access is blocked. Check Firebase Rules.";
+    }
   }
 }
-
-
 /* Save the current player's Bingo card and marked squares. */
 async function saveGame() {
   if (!currentUser || numbers.length !== 25) return;
