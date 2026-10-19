@@ -2,33 +2,74 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DaraBingo Admin</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f3f6fb;
-      padding: 24px;
-      text-align: center;
+      background: #f1f5f9;
+      margin: 0;
+      padding: 20px;
+      color: #1e293b;
+    }
+    .container {
+      max-width: 700px;
+      margin: auto;
+    }
+    header {
+      background: #166534;
+      color: white;
+      padding: 22px;
+      border-radius: 14px;
     }
     .card {
       background: white;
-      padding: 24px;
-      border-radius: 16px;
-      max-width: 500px;
-      margin: 40px auto;
-      box-shadow: 0 4px 15px #0001;
+      padding: 20px;
+      margin-top: 18px;
+      border-radius: 14px;
+      box-shadow: 0 3px 12px #0001;
     }
-    h1 { color: #176b3a; }
-    p { line-height: 1.6; }
+    .warning {
+      background: #fff7ed;
+      border-left: 4px solid #ea580c;
+      padding: 12px;
+      line-height: 1.6;
+    }
+    button {
+      background: #166534;
+      color: white;
+      border: 0;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 16px;
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>🎱 DaraBingo Admin</h1>
-    <p>Welcome to the DaraBingo administration page.</p>
-    <p id="status">Admin backend setup is required.</p>
-    <p>Agent applications must only be reviewed through a securely authorized backend.</p>
+  <div class="container">
+    <header>
+      <h1>🎱 DaraBingo Admin</h1>
+      <p>Administration Dashboard</p>
+    </header>
+
+    <section class="card">
+      <h2>Agent Applications</h2>
+      <p>Agent application management will appear here after secure backend setup.</p>
+      <p><strong>Status:</strong> Backend not configured</p>
+    </section>
+
+    <section class="card">
+      <h2>Security</h2>
+      <div class="warning">
+        For your security, this page does not directly approve or reject applications.
+        A trusted Firebase backend and administrator authorization are required.
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Main Website</h2>
+      <p><a href="./index.html">Open DaraBingo</a></p>
+    </section>
   </div>
 </body>
 </html>
