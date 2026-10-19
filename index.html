@@ -44,10 +44,12 @@ footer{padding:20px;color:var(--muted);font-size:12px}
 <header>🎱 DaraBingo</header>
 <main>
 <section class="card auth-card" id="authCard">
-  <h2>Welcome to DaraBingo!</h2><p>Create an account or log in.</p>
+  <h2>Welcome to DaraBingo!</h2>
+  <p>Create an account or log in.</p>
   <input id="email" type="email" placeholder="Email address" autocomplete="email">
   <input id="password" type="password" placeholder="Password (at least 6 characters)" autocomplete="current-password">
-  <button id="signupBtn">Sign Up</button><button id="loginBtn">Login</button>
+  <button id="signupBtn">Sign Up</button>
+  <button id="loginBtn">Login</button>
   <p id="authMessage" class="small status" role="status"></p>
 </section>
 
@@ -62,7 +64,8 @@ footer{padding:20px;color:var(--muted);font-size:12px}
       <h2>Your Bingo Card</h2>
       <div class="bingo-head"><span>B</span><span>I</span><span>N</span><span>G</span><span>O</span></div>
       <div id="grid" class="grid" aria-label="Bingo card"></div>
-      <button id="newCardBtn">New Card</button><button id="checkBtn">Check Bingo</button>
+      <button id="newCardBtn">New Card</button>
+      <button id="checkBtn">Check Bingo</button>
       <p id="message" class="status" role="status">Tap numbers to mark them.</p>
       <p class="small">Mark five numbers in a row, column, or diagonal. The FREE center square counts automatically.</p>
     </section>
@@ -77,7 +80,7 @@ footer{padding:20px;color:var(--muted);font-size:12px}
   <div class="columns" style="margin-top:14px">
     <section class="card">
       <h2>🏆 Demo Scoreboard</h2>
-      <p class="small">Shows demo wins for this browser session/account data. It is not a verified global ranking.</p>
+      <p class="small">Shows your demo wins for this account only; it is not a global ranking.</p>
       <div class="table-wrap"><table><thead><tr><th>Player</th><th>Demo wins</th><th>Games</th></tr></thead><tbody id="scoreboardBody"><tr><td colspan="3">Loading…</td></tr></tbody></table></div>
     </section>
     <section class="card">
@@ -86,6 +89,19 @@ footer{padding:20px;color:var(--muted);font-size:12px}
       <button id="refreshBtn" class="secondary">Refresh Data</button>
     </section>
   </div>
+</section>
+
+<section class="card hidden" id="agentApplication">
+  <h2>🤝 Apply to Become an Agent</h2>
+  <p>Complete the form to apply. Your application will be reviewed.</p>
+  <form id="agentApplicationForm">
+    <input id="agentFullName" type="text" placeholder="Full name" autocomplete="name" maxlength="100" required>
+    <input id="agentPhone" type="tel" placeholder="Phone number" autocomplete="tel" maxlength="30" required>
+    <input id="agentTelegram" type="text" placeholder="Telegram username (e.g. @username)" maxlength="50" required>
+    <button id="submitAgentApplication" type="submit">Submit Application</button>
+    <button id="cancelAgentApplication" type="button" class="secondary">Cancel</button>
+  </form>
+  <p id="agentApplicationMessage" class="small status" role="status" aria-live="polite"></p>
 </section>
 </main>
 <footer>DaraBingo © 2026 · Demo game only</footer>
@@ -106,7 +122,7 @@ const firebaseConfig = {
 };
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getDatabase(app);
 const $=id=>document.getElementById(id);
-let currentUser=null,numbers=[],selected=new Set(),winningLine=[],profile={gamesPlayed:0,wins:0},history=[],saving=false;
+let currentUser=null,numbers=[],selected=new Set(),winningLine=[],profile={gamesPlayed:0,wins:0},history=[];
 
 function authError(error){
  const map={
@@ -135,14 +151,10 @@ $("logoutBtn").addEventListener("click",async()=>{try{await signOut(auth)}catch{
 $("refreshBtn").addEventListener("click",refreshData);
 
 function makeCard(){
- const cols=[
-  shuffledRange(1,15),shuffledRange(16,30),shuffledRange(31,45),
-  shuffledRange(46,60),shuffledRange(61,75)
- ];
+ const cols=[shuffledRange(1,15),shuffledRange(16,30),shuffledRange(31,45),shuffledRange(46,60),shuffledRange(61,75)];
  numbers=[];
  for(let r=0;r<5;r++)for(let c=0;c<5;c++)numbers.push(c===2&&r===2?"FREE":cols[c][r]);
- selected=new Set();selected.add(12);winningLine=[];
- render();
+ selected=new Set([12]);winningLine=[];render();
 }
 function shuffledRange(min,max){
  const a=Array.from({length:max-min+1},(_,i)=>i+min);
@@ -152,9 +164,10 @@ function shuffledRange(min,max){
 function render(){
  const grid=$("grid");grid.replaceChildren();
  numbers.forEach((n,i)=>{
-  const b=document.createElement("button");
-  b.type="button";b.className="cell"+(selected.has(i)?" marked":"")+(n==="FREE"?" free":"")+(winningLine.includes(i)?" win":"");
-  b.textContent=n;b.setAttribute("aria-pressed",String(selected.has(i)));b.setAttribute("aria-label",n==="FREE"?"Free center square":`Number ${n}${selected.has(i)?", marked":""}`);
+  const b=document.createElement("button");b.type="button";
+  b.className="cell"+(selected.has(i)?" marked":"")+(n==="FREE"?" free":"")+(winningLine.includes(i)?" win":"");
+  b.textContent=n;b.setAttribute("aria-pressed",String(selected.has(i)));
+  b.setAttribute("aria-label",n==="FREE"?"Free center square":`Number ${n}${selected.has(i)?", marked":""}`);
   b.addEventListener("click",()=>{
    if(i===12)return;
    if(selected.has(i))selected.delete(i);else selected.add(i);
@@ -172,13 +185,8 @@ function getLines(){
 function checkBingo(){
  const wins=getLines().filter(line=>line.every(i=>selected.has(i)||i===12));
  winningLine=wins[0]||[];render();
- if(wins.length){
-  $("message").textContent="🎉 Bingo! Demo win recorded.";
-  recordResult("Demo win");
- }else{
-  $("message").textContent="Not yet. Keep playing!";
-  recordResult("No Bingo");
- }
+ if(wins.length){$("message").textContent="🎉 Bingo! Demo win recorded.";recordResult("Demo win")}
+ else{$("message").textContent="Not yet. Keep playing!";recordResult("No Bingo")}
 }
 async function persistGame(){
  if(!currentUser||numbers.length!==25)return;
@@ -195,10 +203,8 @@ async function recordResult(result){
   const hRef=ref(db,`${base}/history`),hSnap=await get(hRef);
   const old=hSnap.exists()&&Array.isArray(hSnap.val())?hSnap.val():[];
   history=[entry,...old].slice(0,20);
-  const pRef=ref(db,`${base}/profile`),pSnap=await get(pRef);
-  const p=pSnap.exists()?pSnap.val():{};
-  const nextGames=(Number(p.gamesPlayed)||0)+1;
-  const nextWins=(Number(p.wins)||0)+(result==="Demo win"?1:0);
+  const pRef=ref(db,`${base}/profile`),pSnap=await get(pRef),p=pSnap.exists()?pSnap.val():{};
+  const nextGames=(Number(p.gamesPlayed)||0)+1,nextWins=(Number(p.wins)||0)+(result==="Demo win"?1:0);
   await update(ref(db,base),{
    profile:{uid:currentUser.uid,email:currentUser.email||"",updatedAt:Date.now(),gamesPlayed:nextGames,wins:nextWins},
    history
@@ -211,8 +217,7 @@ async function loadGame(){
  if(!currentUser)return false;
  try{
   const s=await get(ref(db,`users/${currentUser.uid}/game`));if(!s.exists())return false;
-  const v=s.val();
-  if(!Array.isArray(v.numbers)||v.numbers.length!==25)return false;
+  const v=s.val();if(!Array.isArray(v.numbers)||v.numbers.length!==25)return false;
   numbers=v.numbers;numbers[12]="FREE";
   selected=new Set(Array.isArray(v.selected)?v.selected.filter(i=>Number.isInteger(i)&&i>=0&&i<25):[12]);
   selected.add(12);winningLine=[];render();$("message").textContent="Your saved Bingo card is ready.";return true;
@@ -225,9 +230,11 @@ async function loadProfileAndHistory(){
   profile=pSnap.exists()?pSnap.val():{gamesPlayed:0,wins:0};
   history=hSnap.exists()&&Array.isArray(hSnap.val())?hSnap.val():[];
   $("profileEmail").textContent="Email: "+(currentUser.email||"—");
-  renderProfile();renderHistory();
-  $("dbStatus").textContent="Connected to Firebase.";
- }catch(e){console.warn(e);$("dbStatus").textContent="Database access blocked. Check your Firebase Rules.";profile={gamesPlayed:0,wins:0};history=[];renderProfile();renderHistory()}
+  renderProfile();renderHistory();$("dbStatus").textContent="Connected to Firebase.";
+ }catch(e){
+  console.warn(e);$("dbStatus").textContent="Database access blocked. Check your Firebase Rules.";
+  profile={gamesPlayed:0,wins:0};history=[];renderProfile();renderHistory();
+ }
 }
 function renderProfile(){
  $("profileEmail").textContent="Email: "+(currentUser?.email||"—");
@@ -244,23 +251,73 @@ function renderHistory(){
 }
 async function renderScoreboard(){
  const body=$("scoreboardBody");body.replaceChildren();
- // RTDB rules intentionally protect each player's own profile; this table is account-local,
- // not a global leaderboard. Avoid broad user reads that would expose private emails.
  const tr=document.createElement("tr"),name=document.createElement("td"),wins=document.createElement("td"),games=document.createElement("td");
  name.textContent="You";wins.textContent=String(Number(profile.wins)||0);games.textContent=String(Number(profile.gamesPlayed)||0);
  tr.append(name,wins,games);body.appendChild(tr);
 }
-async function refreshData(){
- if(!currentUser)return;
- await loadProfileAndHistory();await renderScoreboard();
-}
+async function refreshData(){if(!currentUser)return;await loadProfileAndHistory();await renderScoreboard()}
+
 $("newCardBtn").addEventListener("click",()=>{makeCard();$("message").textContent="New card ready! Mark numbers to play.";persistGame()});
 $("checkBtn").addEventListener("click",checkBingo);
 
+// Agent application controls. Only one form exists, and it is shown after login.
+const agentButton=document.createElement("button");
+agentButton.type="button";
+agentButton.id="openAgentApplication";
+agentButton.textContent="🤝 Apply to Become an Agent";
+$("gameArea").insertBefore(agentButton,$("gameArea").children[2]||null);
+agentButton.addEventListener("click",()=>{
+ $("agentApplication").classList.remove("hidden");
+ $("agentApplication").scrollIntoView({behavior:"smooth",block:"start"});
+});
+$("cancelAgentApplication").addEventListener("click",()=>{
+ $("agentApplication").classList.add("hidden");
+ $("agentApplicationMessage").textContent="";
+ $("agentApplicationForm").reset();
+});
+$("agentApplicationForm").addEventListener("submit",async event=>{
+ event.preventDefault();
+ if(!currentUser){$("agentApplicationMessage").textContent="Please log in before applying.";return}
+ const fullName=$("agentFullName").value.trim();
+ const phone=$("agentPhone").value.trim();
+ const telegram=$("agentTelegram").value.trim().replace(/^@/,"");
+ if(!fullName||!phone||!telegram){$("agentApplicationMessage").textContent="Please complete all fields.";return}
+ const button=$("submitAgentApplication");button.disabled=true;
+ $("agentApplicationMessage").textContent="Submitting application…";
+ try{
+  const applicationRef=ref(db,`agentApplications/${currentUser.uid}`);
+  const existing=await get(applicationRef);
+  if(existing.exists()){
+   $("agentApplicationMessage").textContent="An application already exists for this account.";
+   return;
+  }
+  await set(applicationRef,{
+   uid:currentUser.uid,
+   fullName,
+   email:currentUser.email||"",
+   phone,
+   telegram,
+   status:"pending",
+   createdAt:Date.now()
+  });
+  $("agentApplicationMessage").textContent="Application submitted successfully!";
+  $("agentApplicationForm").reset();
+ }catch(error){
+  console.error(error);
+  $("agentApplicationMessage").textContent="Could not submit application. Check Firebase Database Rules and try again.";
+ }finally{button.disabled=false}
+});
+
 onAuthStateChanged(auth,async user=>{
  currentUser=user;
- $("authCard").classList.toggle("hidden",!!user);$("gameArea").classList.toggle("hidden",!user);
- if(!user){numbers=[];selected.clear();return}
+ $("authCard").classList.toggle("hidden",!!user);
+ $("gameArea").classList.toggle("hidden",!user);
+ if(!user){
+  numbers=[];selected.clear();
+  $("agentApplication").classList.add("hidden");
+  $("agentApplicationForm").reset();
+  return;
+ }
  $("welcome").textContent="Welcome, "+(user.email||"Player");
  $("authMessage").textContent="";$("dbStatus").textContent="Loading your data…";
  await loadProfileAndHistory();
