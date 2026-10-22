@@ -1,48 +1,84 @@
 <!doctype html>
 <html lang="am">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>DaraBingo</title>
-<style>
-:root{--navy:#17243c;--blue:#2468d8;--gold:#f5c928;--green:#198b50;--paper:#fffdf8;--muted:#758094}
-*{box-sizing:border-box}body{margin:0;background:#edf0f5;color:#192033;font-family:system-ui,-apple-system,"Noto Sans Ethiopic",Arial,sans-serif}
+ <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>DaraBingo</title>
+  <style>
+:root{--navy:#17243c;--blue:#2468d8;--gold:#f5c928;--muted:#758094}
+*{box-sizing:border-box}
+body{margin:0;background:#edf0f5;color:#192033;font-family:system-ui,-apple-system,"Noto Sans Ethiopic",Arial,sans-serif}
 button,input{font:inherit}button{cursor:pointer;border:0;border-radius:12px;padding:12px 16px;font-weight:750}
 header{background:var(--navy);color:white;padding:16px;display:flex;align-items:center;justify-content:space-between;gap:10px;position:sticky;top:0;z-index:5}
-.brand{font-size:22px;font-weight:900;letter-spacing:.3px}.brand span{color:var(--gold)}.sub{font-size:12px;color:#c6d2e8}
+.brand{font-size:22px;font-weight:900}.brand span{color:var(--gold)}.sub{font-size:12px;color:#c6d2e8}
 .wrap{max-width:980px;margin:auto;padding:16px}.panel{background:white;border-radius:18px;padding:18px;box-shadow:0 5px 18px #17243c12;margin-bottom:15px}
 h2{font-size:20px;margin:0 0 12px}.muted{color:var(--muted);font-size:14px}.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1}
 input{width:100%;padding:13px;border:1px solid #ccd3df;border-radius:10px;margin:5px 0 12px;background:#fff}
-.primary{background:var(--blue);color:white}.secondary{background:#e8edf5;color:#24304a}.gold{background:var(--gold);color:#29220a}.danger{background:#a32d39;color:white}
+.primary{background:var(--blue);color:white}.secondary{background:#e8edf5;color:#24304a}.gold{background:var(--gold);color:#29220a}
 .hidden{display:none!important}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.tabs button{flex:1;min-width:100px}.tabs .active{background:var(--blue);color:white}
 .status{padding:11px 13px;border-radius:10px;background:#f1f5fa;margin:10px 0;white-space:pre-wrap}.status.error{background:#fff0f0;color:#a3202a}.status.ok{background:#eaf8ef;color:#176d3b}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.stat{background:var(--navy);color:white;border-radius:12px;padding:12px;text-align:center}.stat strong{display:block;font-size:22px;color:var(--gold)}
-.gamegrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;max-width:500px;margin:12px auto}.cell{aspect-ratio:1;border-radius:9px;background:#f6f7f9;border:1px solid #d4dae4;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:clamp(14px,4vw,22px);padding:0}.cell.marked{background:var(--gold);border-color:#d6a900}.cell.free{background:#2869d8;color:white}.cell.head{background:var(--navy);color:white;aspect-ratio:auto;padding:8px 0;border-radius:7px}
+.gamegrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;max-width:500px;margin:12px auto}
+.cell{aspect-ratio:1;border-radius:9px;background:#f6f7f9;border:1px solid #d4dae4;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:clamp(14px,4vw,22px);padding:0}
+.cell.marked{background:var(--gold);border-color:#d6a900}.cell.free{background:#2869d8;color:white}.cell.head{background:var(--navy);color:white;aspect-ratio:auto;padding:8px 0;border-radius:7px}
 .history-item{padding:11px 0;border-bottom:1px solid #e8ebf0}.history-item:last-child{border:0}
 footer{text-align:center;color:#6c7688;font-size:12px;padding:15px}
 @media(min-width:720px){.columns{display:grid;grid-template-columns:1fr 1fr;gap:15px}.wrap{padding:24px}}
 </style>
-</head>
-<body>
-<header><div><div class="brand">­Ъј▒ Dara<span>Bingo</span></div><div class="sub">Bingo demo Рђб рІерѕЎріерѕФ рїерІІрЅ│</div></div><button id="logout" class="secondary hidden">рІЇрїБ</button></header>
-<main class="wrap">
-<section id="authPanel" class="panel">
-<h2>рІѕрІ░ DaraBingo рїЇрЅБ</h2><p class="muted">рЅарібрѕюрІГрѕЇ рѕўрѕѕрІФ рЇЇрїарѕГ рІѕрІГрѕЮ рїЇрЅБрЇб</p>
-<div class="tabs"><button id="loginTab" class="active secondary">рїЇрЅБ</button><button id="signupTab" class="secondary">рѕўрѕѕрІФ рЇЇрїарѕГ</button></div>
-<form id="authForm"><label for="email">рібрѕюрІГрѕЇ</label><input id="email" type="email" autocomplete="email" required placeholder="you@example.com"><label for="password">рІерІГрѕѕрЇЇ рЅЃрѕЇ (рЅбрІФріЋрѕх 6 рЅЂрѕЮрЇі)</label><input id="password" type="password" autocomplete="current-password" minlength="6" required placeholder="РђбРђбРђбРђбРђбРђбРђбРђб"><button id="authSubmit" class="primary" type="submit" style="width:100%">рїЇрЅБ</button></form>
-<div id="authStatus" class="status" role="status">Firebase рїЇріЋріЎріљрЅх ріЦрІерЅ░рІўрїІрїђ ріљрІЇРђд</div>
-</section>
-<section id="appPanel" class="hidden">
-<div class="panel"><h2>ріЦріЋрі│ріЋ рІ░рѕЁріЊ рѕўрїБрѕЁ!</h2><div id="welcome" class="muted"></div><p>рІерѕЎріерѕФ рЅђрѕф рѕѓрѕ│рЅЦ: <b>100 Demo Points</b></p><p class="muted">рІерѕЎріерѕФ ріљрїЦрЅдрЅй рЅЦрЅ╗ ріЊрЅИрІЇрЇб ріЦрІЇріљрЅ░ріЏ рїѕріЋрІўрЅЦ ріарІГрЅђрЅарѕЇрѕЮрЇБ ріарІГріерѕЏрЅйрѕЮрЇБ ріарІГріерЇѕрѕЇрѕЮрЇб</p></div>
-<div class="columns"><div class="panel"><h2>рІеBingo ріФрѕГрІх</h2><div id="card" class="gamegrid" aria-label="Bingo card"></div><div class="row"><button id="newCard" class="secondary">ріарІ▓рѕх ріФрѕГрІх</button><button id="checkBingo" class="gold">Bingo рЇѕрЅхрѕй</button></div><div id="gameStatus" class="status">ріаріЋрІх рѕерІхрЇЇрЇБ ріарѕЮрІх рІѕрІГрѕЮ рІ▓рІФрїјріЊрѕЇ рѕЮрѕЇріГрЅх ріарІхрѕГрїЇрЇб</div></div>
-<div class="panel"><h2>рІерїерІІрЅ│ рЅ│рѕфріГ</h2><div id="history" class="muted">рЅ│рѕфріГ ріЦрІерЅ░рїФріљ ріљрІЇРђд</div></div></div>
-</section>
-</main><footer>DaraBingo Рђб Demo only Рђб рІерїЇрѕЇ рѕўрѕѕрІФ рІЇрѕѓрЅЦ рЅЦрЅ╗ рІГрЅ│рІФрѕЇ</footer>
-<script type="module">
+ </head>
+ <body>
+  <header>
+   <div>
+    <div class="brand">
+     🎱 Dara<span>Bingo</span>
+    </div>
+    <div class="sub">የBingo የሙከራ ጨዋታ</div>
+   </div>
+   <button id="logout" class="secondary hidden">ውጣ</button>
+  </header>
+  <main class="wrap">
+   <section id="authPanel" class="panel">
+    <h2>ወደ DaraBingo ግባ</h2>
+    <p class="muted">በኢሜይል መለያ ፍጠር ወይም ወደ መለያህ ግባ።</p>
+    <div class="tabs">
+     <button id="loginTab" class="active secondary" type="button">ግባ</button>
+     <button id="signupTab" class="secondary" type="button">መለያ ፍጠር</button>
+    </div>
+    <form id="authForm">
+     <label for="email">ኢሜይል</label><input id="email" type="email" autocomplete="email" required placeholder="you@example.com"> <label for="password">የይለፍ ቃል (ቢያንስ 6 ቁምፊ)</label><input id="password" type="password" autocomplete="current-password" minlength="6" required placeholder="የይለፍ ቃል">
+     <button id="authSubmit" class="primary" type="submit" style="width:100%">ግባ</button>
+    </form>
+    <div id="authStatus" class="status" role="status">Firebase እየተዘጋጀ ነው…</div>
+   </section>
+   <section id="appPanel" class="hidden">
+    <div class="panel">
+     <h2>እንኳን ደህና መጣህ!</h2>
+     <div id="welcome" class="muted"></div>
+     <p>የሙከራ ቀሪ ሂሳብ: <b>100 Demo Points</b></p>
+     <p class="muted">የሙከራ ነጥቦች ብቻ ናቸው። እውነተኛ ገንዘብ አይቀበልም፣ አይከማችም፣ አይከፈልም።</p>
+    </div>
+    <div class="columns">
+     <div class="panel">
+      <h2>የBingo ካርድ</h2>
+      <div id="card" class="gamegrid" aria-label="Bingo card"></div>
+      <div class="row">
+       <button id="newCard" class="secondary" type="button">አዲስ ካርድ</button>
+       <button id="checkBingo" class="gold" type="button">Bingo ፈትሽ</button>
+      </div>
+      <div id="gameStatus" class="status">ቁጥሮችን በመንካት ምልክት አድርግ። አንድ ሙሉ ረድፍ፣ አምድ ወይም ዲያጎናል ያስፈልጋል።</div>
+     </div>
+     <div class="panel">
+      <h2>የጨዋታ ታሪክ</h2>
+      <div id="history" class="muted">ታሪክ እየተጫነ ነው…</div>
+     </div>
+    </div>
+   </section>
+  </main>
+  <footer>DaraBingo • Demo only • የሙከራ ጨዋታ ብቻ</footer>
+  <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
-import { getDatabase, ref, get, set, push, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
-
-/* Check this configuration against Firebase Console > Project settings > Your apps. */
+import { getDatabase, ref, get, push, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+ 
 const firebaseConfig = {
   apiKey: "AIzaSyCvFGMyHt3Z15DkXjgP0bRwzcOR22kzy5o",
   authDomain: "darabingo.firebaseapp.com",
@@ -52,93 +88,97 @@ const firebaseConfig = {
   messagingSenderId: "602699715656",
   appId: "1:602699715656:web:b20a1380d030dc7e75b47d"
 };
+ 
 const $ = id => document.getElementById(id);
-let app, auth, db, mode="login", currentUser=null, card=[], marked=new Set(), busy=false;
-function status(id,msg,type=""){const el=$(id);el.textContent=msg;el.className="status "+type}
-function explainError(e){
- const code=e?.code||"";
- const map={
- "auth/email-already-in-use":"рІГрѕЁ рібрѕюрІГрѕЇ ріарѕхрЅђрІхрѕъ рЅ░рѕўрІЮрїЇрЅДрѕЇрЇб рІѕрІ░ рїЇрЅБ рЅђрІГрѕГрЇб",
- "auth/invalid-email":"рІерібрѕюрІГрѕЇ ріарІхрѕФрѕ╗рІЇріЋ ріарѕхрЅ░ріФріГрѕЇрЇб",
- "auth/weak-password":"рІерІГрѕѕрЇЇ рЅЃрѕЅ рЅбрІФріЋрѕх 6 рЅЂрѕЮрЇі рІГрѕЂріЋрЇб",
- "auth/invalid-credential":"рібрѕюрІГрѕЅ рІѕрІГрѕЮ рІерІГрѕѕрЇЇ рЅЃрѕЅ рЅхріГріГрѕЇ ріарІГрІ░рѕѕрѕЮрЇб",
- "auth/user-not-found":"рІГрѕЁ рѕўрѕѕрІФ ріарѕЇрЅ░рїѕріўрѕЮрЇб рѕўрѕѕрІФ рЇЇрїарѕГрЇб",
- "auth/wrong-password":"рІерІГрѕѕрЇЇ рЅЃрѕЅ рЅхріГріГрѕЇ ріарІГрІ░рѕѕрѕЮрЇб",
- "auth/too-many-requests":"рЅЦрІЎ рїірІю рѕъріГрѕерѕЃрѕЇрЇб рЅєрІГрЅ░рѕЁ ріЦріЋрІ░рїѕріЊ рѕъріГрѕГрЇб",
- "auth/network-request-failed":"рІерібріЋрЅ░рѕГріћрЅх рїЇріЋріЎріљрЅхріЋ рЇѕрЅхрѕйрЇб",
- "auth/operation-not-allowed":"Firebase Console рІЇрѕхрїЦ Email/Password Sign-in ріЦріЋрІ▓ріљрЅЃ ріарІхрѕГрїЇрЇб",
- "auth/unauthorized-domain":"рІерІхрѕе-рїѕрї╣ріЋ domain рЅаFirebase Authentication > Settings > Authorized domains рІЇрѕхрїЦ рїерѕЮрѕГрЇб",
- "PERMISSION_DENIED":"Realtime Database Rules рІерІџрѕЁріЋ ріЦрѕГрѕЮрїЃ ріарІГрЇѕрЅЁрІ▒рѕЮрЇб"
- };
- return map[code] || `${e?.message||"рІФрѕЇрЅ│рІѕрЅђ рѕхрѕЁрЅ░рЅх"}${code?` (${code})`:""}`;
+let auth, db, mode = "login", currentUser = null, card = [], marked = new Set(), busy = false;
+function showStatus(id, message, type = "") { const el = $(id); el.textContent = message; el.className = "status " + type; }
+function explainError(error) {
+  const code = error?.code || "";
+  const messages = {
+    "auth/email-already-in-use":"ይህ ኢሜይል አስቀድሞ ተመዝግቧል። ወደ ግባ ቀይር።",
+    "auth/invalid-email":"የኢሜይል አድራሻውን አስተካክል።",
+    "auth/weak-password":"የይለፍ ቃሉ ቢያንስ 6 ቁምፊ ይሁን።",
+    "auth/invalid-credential":"ኢሜይሉ ወይም የይለፍ ቃሉ ትክክል አይደለም።",
+    "auth/user-not-found":"መለያው አልተገኘም። መለያ ፍጠር።",
+    "auth/wrong-password":"የይለፍ ቃሉ ትክክል አይደለም።",
+    "auth/too-many-requests":"ብዙ ጊዜ ሞክረሃል። ቆይተህ እንደገና ሞክር።",
+    "auth/network-request-failed":"የኢንተርኔት ግንኙነትህን ፈትሽ።",
+    "auth/operation-not-allowed":"Firebase Console ውስጥ Email/Password Sign-in አንቃ።",
+    "auth/unauthorized-domain":"የWebsite ዶሜይንህን Firebase Authentication > Settings > Authorized domains ውስጥ ጨምር።",
+    "PERMISSION_DENIED":"Realtime Database Rules ይህን እርምጃ አይፈቅዱም።"
+  };
+  return messages[code] || `${error?.message || "ያልታወቀ ስህተት"}${code ? " (" + code + ")" : ""}`;
 }
-function renderCard(){
- const root=$("card");root.innerHTML="";
- ["B","I","N","G","O"].forEach(x=>{const el=document.createElement("div");el.className="cell head";el.textContent=x;root.append(el)});
- card.forEach((n,i)=>{const el=document.createElement("button");el.className="cell"+(i===12?" free":"")+(marked.has(i)?" marked":"");el.textContent=i===12?"FREE":n;el.setAttribute("aria-pressed",String(marked.has(i)));el.onclick=()=>{if(i===12)return;marked.has(i)?marked.delete(i):marked.add(i);renderCard()};root.append(el)});
+function renderCard() {
+  const root = $("card"); root.innerHTML = "";
+  ["B","I","N","G","O"].forEach(letter => { const el=document.createElement("div"); el.className="cell head"; el.textContent=letter; root.append(el); });
+  card.forEach((number,index) => {
+    const el=document.createElement("button");
+    el.type="button"; el.className="cell"+(index===12?" free":"")+(marked.has(index)?" marked":"");
+    el.textContent=index===12?"FREE":number; el.setAttribute("aria-pressed",String(marked.has(index)));
+    el.onclick=()=>{ if(index===12)return; marked.has(index)?marked.delete(index):marked.add(index); renderCard(); };
+    root.append(el);
+  });
 }
-function newBingoCard(){
- const cols=[[1,15],[16,30],[31,45],[46,60],[61,75]];
- card=[];for(let c=0;c<5;c++){const nums=[];while(nums.length<5){const n=Math.floor(Math.random()*15)+cols[c][0];if(!nums.includes(n))nums.push(n)}card.push(...nums)}
- // Reorder column-generated numbers into row-major order
- const colData=card.slice();card=[];for(let r=0;r<5;r++)for(let c=0;c<5;c++)card.push(colData[c*5+r]);
- card[12]="FREE";marked=new Set([12]);renderCard();status("gameStatus","ріарІ▓рѕх ріФрѕГрІх рЅ░рЇѕрїЦрѕ»рѕЇрЇб рЅЂрїЦрѕ«рЅйріЋ рЅарѕўріЋріФрЅх рѕЮрѕЇріГрЅх ріарІхрѕГрїЇрЇб","ok");
+function newBingoCard() {
+  const ranges=[[1,15],[16,30],[31,45],[46,60],[61,75]], columns=[];
+  for(const [min,max] of ranges){const nums=[];while(nums.length<5){const n=Math.floor(Math.random()*(max-min+1))+min;if(!nums.includes(n))nums.push(n)}columns.push(nums);}
+  card=[];for(let row=0;row<5;row++)for(let col=0;col<5;col++)card.push(columns[col][row]);
+  card[12]="FREE";marked=new Set([12]);renderCard();
+  showStatus("gameStatus","አዲስ ካርድ ተፈጥሯል። ቁጥሮችን በመንካት ምልክት አድርግ።","ok");
 }
-function hasBingo(){
- const yes=i=>i===12||marked.has(i);
- for(let r=0;r<5;r++)if([0,1,2,3,4].every(c=>yes(r*5+c)))return true;
- for(let c=0;c<5;c++)if([0,1,2,3,4].every(r=>yes(r*5+c)))return true;
- if([0,1,2,3,4].every(i=>yes(i*5+i)))return true;
- if([0,1,2,3,4].every(i=>yes(i*5+(4-i))))return true;
- return false;
+function hasBingo() {
+  const markedAt=i=>i===12||marked.has(i);
+  for(let row=0;row<5;row++)if([0,1,2,3,4].every(col=>markedAt(row*5+col)))return true;
+  for(let col=0;col<5;col++)if([0,1,2,3,4].every(row=>markedAt(row*5+col)))return true;
+  if([0,1,2,3,4].every(i=>markedAt(i*5+i)))return true;
+  if([0,1,2,3,4].every(i=>markedAt(i*5+(4-i))))return true;
+  return false;
 }
-async function loadHistory(){
- if(!currentUser)return;
- const box=$("history");box.textContent="рЅ│рѕфріГ ріЦрІерЅ░рїФріљ ріљрІЇРђд";
- try{
-  const q=query(ref(db,`users/${currentUser.uid}/history`),orderByChild("at"),limitToLast(20));
-  const snap=await get(q);box.innerHTML="";
-  if(!snap.exists()){box.textContent="рїѕріЊ рІерїерІІрЅ│ рЅ│рѕфріГ рІерѕѕрѕЮрЇб";return}
-  const items=[];snap.forEach(s=>items.push({id:s.key,...s.val()}));items.sort((a,b)=>(b.at||0)-(a.at||0));
-  items.forEach(item=>{const div=document.createElement("div");div.className="history-item";const when=item.at?new Date(item.at).toLocaleString():"рЅђріЋ ріарѕЇрЅ░рѕўрІўрїѕрЅарѕЮ";div.textContent=`${item.result||"рїерІІрЅ│"} Рђб ${when}`;box.append(div)});
- }catch(e){box.textContent="History рѕўрїФріЋ ріарѕЇрЅ░рЅ╗рѕѕрѕЮ: "+explainError(e)}
+async function loadHistory() {
+  if(!currentUser)return;
+  const box=$("history");box.textContent="ታሪክ እየተጫነ ነው…";
+  try {
+    const historyQuery=query(ref(db,`users/${currentUser.uid}/history`),orderByChild("at"),limitToLast(20));
+    const snapshot=await get(historyQuery);box.innerHTML="";
+    if(!snapshot.exists()){box.textContent="ገና የጨዋታ ታሪክ የለም።";return;}
+    const items=[];snapshot.forEach(child=>items.push(child.val()));
+    items.sort((a,b)=>(b.at||0)-(a.at||0));
+    for(const item of items){const line=document.createElement("div");line.className="history-item";line.textContent=`${item.result||"ጨዋታ"} • ${item.at?new Date(item.at).toLocaleString():"ቀን የለም"}`;box.append(line);}
+  } catch(error) { box.textContent="ታሪክን ማሳየት አልተቻለም፦ "+explainError(error); }
 }
-async function saveHistory(result){
- if(!currentUser)throw new Error("рѕўрїђрѕўрѕфрІФ рїЇрЅБрЇб");
- const record={result,at:Date.now(),card:card.map((n,i)=>i===12?"FREE":n),selected:[...marked]};
- await push(ref(db,`users/${currentUser.uid}/history`),record);
+async function saveHistory(result) {
+  if(!currentUser)throw new Error("መጀመሪያ ወደ መለያህ ግባ።");
+  const record={result,at:Date.now(),card:card.map((number,index)=>index===12?"FREE":number),selected:[...marked]};
+  await push(ref(db,`users/${currentUser.uid}/history`),record);
 }
-function setBusy(v){busy=v;$("authSubmit").disabled=v;$("authSubmit").textContent=v?"рЅєрІГРђд":(mode==="login"?"рїЇрЅБ":"рѕўрѕѕрІФ рЇЇрїарѕГ")}
-$("loginTab").onclick=()=>{mode="login";$("loginTab").classList.add("active");$("signupTab").classList.remove("active");$("authSubmit").textContent="рїЇрЅБ";$("password").autocomplete="current-password";status("authStatus","рібрѕюрІГрѕЇріЊ рІерІГрѕѕрЇЇ рЅЃрѕЇ ріарѕхрїѕрЅБрЇб")};
-$("signupTab").onclick=()=>{mode="signup";$("signupTab").classList.add("active");$("loginTab").classList.remove("active");$("authSubmit").textContent="рѕўрѕѕрІФ рЇЇрїарѕГ";$("password").autocomplete="new-password";status("authStatus","ріарІ▓рѕх рѕўрѕѕрІФ рѕѕрѕўрЇЇрїарѕГ рЅхріГріГрѕѕріЏ рібрѕюрІГрѕЇріЊ рЅбрІФріЋрѕх 6 рЅЂрѕЮрЇі рІФрѕѕрІЇ рІерІГрѕѕрЇЇ рЅЃрѕЇ ріарѕхрїѕрЅБрЇб")};
-$("authForm").addEventListener("submit",async ev=>{
- ev.preventDefault();if(busy)return;
- const email=$("email").value.trim(),password=$("password").value;
- setBusy(true);status("authStatus","ріЦрІерЅ░рѕъріерѕе ріљрІЇРђд");
- try{
-  if(mode==="signup")await createUserWithEmailAndPassword(auth,email,password);
-  else await signInWithEmailAndPassword(auth,email,password);
- }catch(e){status("authStatus",explainError(e),"error")}finally{setBusy(false)}
+function setBusy(value) { busy=value; $("authSubmit").disabled=value; $("authSubmit").textContent=value?"ቆይ…":(mode==="login"?"ግባ":"መለያ ፍጠር"); }
+$("loginTab").onclick=()=>{mode="login";$("loginTab").classList.add("active");$("signupTab").classList.remove("active");$("password").autocomplete="current-password";setBusy(false);showStatus("authStatus","ኢሜይልና የይለፍ ቃል አስገባ።");};
+$("signupTab").onclick=()=>{mode="signup";$("signupTab").classList.add("active");$("loginTab").classList.remove("active");$("password").autocomplete="new-password";setBusy(false);showStatus("authStatus","አዲስ መለያ ለመፍጠር ትክክለኛ ኢሜይልና ቢያንስ 6 ቁምፊ ያለው የይለፍ ቃል አስገባ።");};
+$("authForm").addEventListener("submit",async event=>{
+  event.preventDefault();if(busy)return;
+  const email=$("email").value.trim(),password=$("password").value;setBusy(true);showStatus("authStatus","እየተሞከረ ነው…");
+  try { if(mode==="signup")await createUserWithEmailAndPassword(auth,email,password);else await signInWithEmailAndPassword(auth,email,password); }
+  catch(error){showStatus("authStatus",explainError(error),"error");}
+  finally{setBusy(false);}
 });
-$("logout").onclick=async()=>{try{await signOut(auth)}catch(e){alert(explainError(e))}};
+$("logout").onclick=async()=>{try{await signOut(auth);}catch(error){showStatus("authStatus",explainError(error),"error");}};
 $("newCard").onclick=newBingoCard;
 $("checkBingo").onclick=async()=>{
- if(!currentUser)return status("gameStatus","рѕўрїђрѕўрѕфрІФ рІѕрІ░ рѕўрѕѕрІФрѕЁ рїЇрЅБрЇб","error");
- if(!hasBingo())return status("gameStatus","Bingo ріарѕЇрЅ░рїѕріўрѕЮрЇб ріаріЋрІх рѕЎрѕЅ рѕерІхрЇЇрЇБ ріарѕЮрІх рІѕрІГрѕЮ рІ▓рІФрїјріЊрѕЇ рѕЮрѕЇріГрЅх ріарІхрѕГрїЇрЇб");
- try{await saveHistory("Demo win");status("gameStatus","­ЪјЅ Bingo! рІерѕЎріерѕФ рІЇрїцрЅх рЅ░рѕўрІЮрїЇрЅДрѕЇрЇб","ok");await loadHistory()}
- catch(e){status("gameStatus","рІЇрїцрЅ▒ріЋ рѕЏрѕхрЅђрѕўрїЦ ріарѕЇрЅ░рЅ╗рѕѕрѕЮ: "+explainError(e),"error")}
+  if(!currentUser){showStatus("gameStatus","መጀመሪያ ግባ።","error");return;}
+  if(!hasBingo()){showStatus("gameStatus","Bingo አልተገኘም። ሙሉ ረድፍ፣ አምድ ወይም ዲያጎናል ምልክት አድርግ።");return;}
+  try{await saveHistory("Demo win");showStatus("gameStatus","🎉 Bingo! የሙከራ ውጤት ተመዝግቧል።","ok");await loadHistory();}
+  catch(error){showStatus("gameStatus","ውጤቱን ማስቀመጥ አልተቻለም፦ "+explainError(error),"error");}
 };
-try{
- if(firebaseConfig.apiKey.startsWith("PASTE_")||firebaseConfig.appId.startsWith("PASTE_")||firebaseConfig.messagingSenderId.startsWith("PASTE_")){
-  status("authStatus","Firebase Web App рІЇрЅЁрѕГ ріарѕЇрЅ░рѕърѕІрѕЮрЇб Firebase Console > Project settings > Your apps рІЇрѕхрїЦ рІеWeb App config рі«рІхріЋ ріарѕхрїѕрЅБрЇб","error");
- }else{
-  app=initializeApp(firebaseConfig);auth=getAuth(app);db=getDatabase(app);
-  status("authStatus","Firebase рЅ░рІўрїІрїЁрЅирѕЇрЇб рїЇрЅБ рІѕрІГрѕЮ рѕўрѕѕрІФ рЇЇрїарѕГрЇб","ok");
+try {
+  const app=initializeApp(firebaseConfig);auth=getAuth(app);db=getDatabase(app);
+  showStatus("authStatus","Firebase ተዘጋጅቷል። ግባ ወይም መለያ ፍጠር።","ok");
   onAuthStateChanged(auth,async user=>{
-   currentUser=user;
-   $("authPanel").classList.toggle("hidden",!!user);$("appPanel").classList.toggle("hidden",!user);$("logout").classList.toggle("hidden",!user);
-   if(user){$("welcome").textContent=user.email||"рЅ░рїарЅЃрѕџ";newBingoCard();await loadHistory()}
+    currentUser=user;
+    $("authPanel").classList.toggle("hidden",!!user);$("appPanel").classList.toggle("hidden",!user);$("logout").classList.toggle("hidden",!user);
+    if(user){$("welcome").textContent=user.email||"ተጠቃሚ";newBingoCard();await loadHistory();}
   });
- }
-}catch(e){status("authStatus","Firebase рѕЏрѕхрїђрѕўрѕГ ріарѕЇрЅ░рЅ╗рѕѕрѕЮ: "+explainError(e),"error")}
-</script></body></html>
+} catch(error) { showStatus("authStatus","Firebase ማስጀመር አልተቻለም፦ "+explainError(error),"error"); }
+</script>
+ </body>
+</html>
