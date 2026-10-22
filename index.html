@@ -59,7 +59,9 @@ footer{padding:20px;color:var(--muted);font-size:12px}
     <button id="logoutBtn" class="secondary">Logout</button>
     <p>Play Bingo • Have fun!</p>
     <p>Demo balance</p>
-    <div class="balance">100 Demo Points</div>
+    <div class="balance">
+     <span id="topDemoBalance">100</span> Demo Points
+    </div>
     <p class="small">Demo points only. No real money is accepted, stored, or paid.</p>
     <div class="notice">
      <strong>DEMO MODE</strong> — Virtual points only. No deposits, withdrawals, cash prizes, or real-money commissions.
@@ -70,8 +72,8 @@ footer{padding:20px;color:var(--muted);font-size:12px}
      <button type="button" class="secondary" data-jump="profileSection">👤 Profile</button>
      <button type="button" class="secondary" data-jump="demoWalletSection">🪙 Demo Wallet</button>
      <button type="button" class="secondary" data-jump="agentSection">🤝 Agent Demo</button>
-     <button type="button" class="secondary" data-jump="shareSection">📲 Share / Install</button>
-     <button type="button" class="secondary hidden" id="adminNavBtn" data-jump="adminSection">🛠 Admin</button>
+     <button type="button" class="secondary" data-jump="shareInstallSection">📲 Share / Install</button>
+     <button type="button" class="secondary" data-jump="adminSection">🛠 Admin</button>
     </nav>
     <section class="feature-grid" aria-label="Demo overview">
      <div class="feature-tile">
@@ -90,7 +92,7 @@ footer{padding:20px;color:var(--muted);font-size:12px}
       <p class="small">Review your saved demo results.</p>
      </div>
     </section>
-    <section class="card">
+    <section class="card tab-panel" id="gameRooms">
      <h2>🌐 Multiplayer Demo Rooms</h2>
      <p class="small">Create a room and share its code. Room updates sync through Firebase. This prototype uses client-side room actions, so it is for testing only—not a secure competitive game.</p>
      <button id="createRoomBtn">Create Room</button>
@@ -111,8 +113,8 @@ footer{padding:20px;color:var(--muted);font-size:12px}
      </div>
      <p id="roomMessage" class="small status" role="status"></p>
     </section>
-    <div class="columns">
-     <section class="card tab-panel" id="bingoSection">
+    <div class="columns" id="bingoSection">
+     <section class="card">
       <h2>Your Bingo Card</h2>
       <div class="bingo-head">
        <span>B</span><span>I</span><span>N</span><span>G</span><span>O</span>
@@ -123,7 +125,7 @@ footer{padding:20px;color:var(--muted);font-size:12px}
       <p id="message" class="status" role="status">Tap numbers to mark them.</p>
       <p class="small">Mark five numbers in a row, column, or diagonal. The FREE center square counts automatically.</p>
      </section>
-     <section class="card tab-panel" id="profileSection">
+     <section class="card" id="profileSection">
       <h2>Player Profile</h2>
       <p id="profileEmail" class="small">Email: —</p>
       <p id="profileGames">Games played: 0</p>
@@ -202,7 +204,7 @@ footer{padding:20px;color:var(--muted);font-size:12px}
      <section class="card tab-panel" id="agentSection">
       <h2>🤝 Agent Demo Center</h2>
       <p class="small">A sample interface for testing invitations and reports. No real commission is calculated or paid.</p>
-      <label for="agentDisplayName">Demo agent name</label> <input id="agentDisplayName" maxlength="40" placeholder="Enter a demo display name"> <label for="agentInviteCode">Demo invite code</label> <input id="agentInviteCode" maxlength="12" placeholder="e.g. DARA-DEMO">
+      <label for="agentDisplayName">Demo agent name</label> <input id="agentDisplayName" maxlength="40" placeholder="Enter a demo display name"> <label for="agentInviteCode">Demo invite code</label> <input id="agentInviteCode" maxlength="12" placeholder="e.g. DARA-DEMO"> <label for="agentContactMethod">Preferred contact method</label> <select id="agentContactMethod" style="display:block;width:100%;padding:13px;margin:10px 0;border-radius:8px;font-size:16px"> <option value="whatsapp">WhatsApp</option> <option value="telegram">Telegram</option> </select> <label for="agentContactValue">WhatsApp number or Telegram username</label> <input id="agentContactValue" maxlength="80" placeholder="Enter your selected contact detail">
       <button type="button" id="saveAgentDemoBtn">Save Demo Agent Profile</button>
       <p id="agentMessage" class="small status" role="status"></p>
       <div class="feature-grid">
@@ -219,9 +221,20 @@ footer{padding:20px;color:var(--muted);font-size:12px}
       </div>
      </section>
     </div>
+    <section class="card tab-panel" id="shareInstallSection">
+     <h2>📲 Share &amp; Install DaraBingo</h2>
+     <p class="small">Share the demo website with friends, or add it to your phone's home screen.</p>
+     <button type="button" id="shareNativeBtn">Share DaraBingo</button>
+     <button type="button" id="shareWhatsAppBtn" class="secondary">Share on WhatsApp</button>
+     <button type="button" id="shareTelegramBtn" class="secondary">Share on Telegram</button>
+     <button type="button" id="copyLinkBtn" class="secondary">Copy Website Link</button>
+     <button type="button" id="installAppBtn">Install / Add to Home Screen</button>
+     <p id="shareInstallMessage" class="small status" role="status"></p>
+     <p class="small">Website: https://darabingo.web.app/</p>
+    </section>
     <section class="card tab-panel hidden" id="adminSection">
      <h2>🛠 Admin Demo Panel</h2>
-     <p class="small">Visible only to the configured admin account. This browser check is for display only: Firebase Database Rules and a trusted server must enforce privileged actions and validate Bingo wins.</p>
+     <p class="small">Visible only to the configured admin account. This panel is informational; Firebase Database Rules must separately enforce all privileged actions.</p>
      <div class="feature-grid">
       <div class="feature-tile">
        <h3>Firebase connection</h3>
@@ -288,7 +301,9 @@ const firebaseConfig = {
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getDatabase(app);
 const $=id=>document.getElementById(id);
 let currentUser=null,numbers=[],selected=new Set(),winningLine=[],profile={gamesPlayed:0,wins:0},history=[];
-let activeRoom=null,roomUnsubscribe=null,roomIsHost=false,roomBusy=false,lastResultCardKey=null,roomTimerHandle=null,roomSettings={maxPlayers:8,durationSeconds:90,codeLength:6,callIntervalSeconds:0,roomPrefix:"",gameTitle:"DaraBingo"},settingsUnsubscribe=null;
+let activeRoom=null,roomUnsubscribe=null,roomIsHost=false,roomBusy=false,lastResultCardKey=null,lastRenderedRoundKey=null,roomTimerHandle=null,claimProcessing=false;
+const resettingRooms=new Set();
+let roomSettings={maxPlayers:8,entrySeconds:30,roundDurationSeconds:180,codeLength:6,callIntervalSeconds:0,roomPrefix:"",gameTitle:"DaraBingo"},settingsUnsubscribe=null;
  
 function authError(error){
  const map={
@@ -362,16 +377,19 @@ async function checkBingo(){
  const wins=getLines().filter(line=>line.every(i=>selected.has(i)||i===12));
  winningLine=wins[0]||[];render();
  if(!wins.length){$("message").textContent="Not yet. Keep playing!";return}
- if(activeRoom?.status==="finished"){ $("message").textContent="This round has already finished.";return }
+ if(activeRoom?.status==="finished"){$("message").textContent="This round has already finished.";return}
  if(activeRoom){
+  if(activeRoom.status!=="playing"){$("message").textContent="The round has not started yet.";return}
   const called=getCalledSet();
   const valid=winningLine.every(i=>i===12||called.has(Number(numbers[i])));
   if(!valid){$("message").textContent="Bingo line contains a number that has not been called.";return}
-  $("message").textContent="🎉 Bingo pattern found! Submitting a demo claim. This client-side check is not server-verified.";
-  await recordResult("Room demo win");
-  try{await update(ref(db,`rooms/${activeRoom.code}/claims/${currentUser.uid}`),{email:currentUser.email||"Player",claimedAt:Date.now(),line:winningLine});
-   await update(ref(db,`rooms/${activeRoom.code}`),{status:"finished",winnerUid:currentUser.uid,winnerEmail:currentUser.email||"Player",finishedAt:Date.now(),finishReason:"valid_demo_claim"});}
-  catch(e){$("roomMessage").textContent="Could not submit demo win claim. Check room rules."}
+  try{
+   const roundKey=String(activeRoom.roundIndex||1);
+   const claim={uid:currentUser.uid,line:wins[0],numbers:[...numbers],selected:[...selected],claimedAt:Date.now()};
+   await set(ref(db,`rooms/${activeRoom.code}/claims/${roundKey}/${currentUser.uid}`),claim);
+   $("message").textContent="🎉 Demo Bingo claim sent to the host for checking.";
+   $("roomMessage").textContent="Bingo claim submitted. The host checks it in this demo.";
+  }catch(e){console.error(e);$("message").textContent="Could not send your claim. Check the Firebase Rules and room status."}
  }else{
   $("message").textContent="🎉 Bingo! Demo win recorded.";
   await recordResult("Demo win");
@@ -387,20 +405,31 @@ async function persistGame(){
 async function recordResult(result){
  if(!currentUser)return;
  const cardKey=numbers.join(",")+"|"+[...selected].sort((a,b)=>a-b).join(",");
- if(result===lastResultCardKey)return;
- lastResultCardKey=result+"|"+cardKey;
+ const resultKey=result+"|"+cardKey;
+ if(resultKey===lastResultCardKey)return;
+ lastResultCardKey=resultKey;
+ const base=`users/${currentUser.uid}`;
  const entry={result,at:Date.now(),numbers:[...numbers],selected:[...selected]};
  try{
-  const base=`users/${currentUser.uid}`;
-  const hRef=ref(db,`${base}/history`),hSnap=await get(hRef);
-  const old=hSnap.exists()&&Array.isArray(hSnap.val())?hSnap.val():[];
-  history=[entry,...old].slice(0,20);
-  const pRef=ref(db,`${base}/profile`),pSnap=await get(pRef),p=pSnap.exists()?pSnap.val():{};
-  const nextGames=(Number(p.gamesPlayed)||0)+1,nextWins=(Number(p.wins)||0)+(result.toLowerCase().includes("win")?1:0);
-  await update(ref(db,base),{profile:{uid:currentUser.uid,email:currentUser.email||"",updatedAt:Date.now(),gamesPlayed:nextGames,wins:nextWins},history});
-  profile={...p,gamesPlayed:nextGames,wins:nextWins};renderProfile();renderHistory();await renderScoreboard();
-  $("dbStatus").textContent="Game result saved.";
- }catch(e){console.warn(e);$("dbStatus").textContent="Could not save history. Check Firebase Database Rules."}
+  // History entries are stored as individual children so they match the Firebase rules.
+  const historyRef=ref(db,`${base}/history`);
+  await set(push(historyRef),entry);
+  // Update the profile at its own allowed path, avoiding a write to /users/$uid.
+  const profileRef=ref(db,`${base}/profile`);
+  const profileTxn=await runTransaction(profileRef,old=>{
+   const p=old||{};
+   return {uid:currentUser.uid,email:currentUser.email||"",updatedAt:Date.now(),gamesPlayed:(Number(p.gamesPlayed)||0)+1,wins:(Number(p.wins)||0)+(result.toLowerCase().includes("win")?1:0)};
+  });
+  profile=profileTxn.snapshot.exists()?profileTxn.snapshot.val():{gamesPlayed:0,wins:0};
+  // Keep a small per-account history by deleting the oldest entries if there are more than 20.
+  const saved=await get(historyRef);
+  const entries=saved.exists()?Object.entries(saved.val()||{}):[];
+  entries.sort((a,b)=>(Number(a[1]?.at)||0)-(Number(b[1]?.at)||0));
+  for(const [key] of entries.slice(0,Math.max(0,entries.length-20)))await remove(ref(db,`${base}/history/${key}`));
+  await loadProfileAndHistory();
+  await renderScoreboard();
+  $("dbStatus").textContent="Game result saved to Firebase.";
+ }catch(e){console.warn(e);$("dbStatus").textContent="Could not save the result. Check Firebase Database Rules."}
 }
 async function loadGame(){
  if(!currentUser)return false;
@@ -417,7 +446,9 @@ async function loadProfileAndHistory(){
  try{
   const [pSnap,hSnap]=await Promise.all([get(ref(db,`${base}/profile`)),get(ref(db,`${base}/history`))]);
   profile=pSnap.exists()?pSnap.val():{gamesPlayed:0,wins:0};
-  history=hSnap.exists()&&Array.isArray(hSnap.val())?hSnap.val():[];
+  const raw=hSnap.exists()?hSnap.val():{};
+  history=Array.isArray(raw)?raw:Object.values(raw||{});
+  history=history.filter(Boolean).sort((a,b)=>(Number(b.at)||0)-(Number(a.at)||0));
   renderProfile();renderHistory();$("dbStatus").textContent="Connected to Firebase.";
  }catch(e){console.warn(e);$("dbStatus").textContent="Database access blocked. Check your Firebase Rules.";profile={gamesPlayed:0,wins:0};history=[];renderProfile();renderHistory()}
 }
@@ -449,16 +480,23 @@ function makeRoomCode(){
  for(let i=prefix.length;i<length;i++)code+=chars[Math.floor(Math.random()*chars.length)];
  return prefix+code;
 }
+function playerLabel(uid){
+ const player=activeRoom?.players?.[uid];
+ return player?.name||`Player ${String(uid||"").slice(0,4)}`;
+}
+function newPlayerRecord(uid){
+ return {uid,name:`Player ${String(uid||"").slice(0,4)}`,joinedAt:Date.now()};
+}
 async function createRoom(){
  if(!currentUser||roomBusy)return;
  roomBusy=true;$("createRoomBtn").disabled=$("quickMatchBtn").disabled=true;
  try{
   let code,created=false;
-  for(let attempt=0;attempt<5&&!created;attempt++){
+  for(let attempt=0;attempt<8&&!created;attempt++){
    code=makeRoomCode();
    const result=await runTransaction(ref(db,`rooms/${code}`),room=>{
-    if(room===null)return {code,hostUid:currentUser.uid,hostEmail:currentUser.email||"Player",status:"waiting",createdAt:Date.now(),settings:{entrySeconds:roomSettings.entrySeconds,roundDurationSeconds:roomSettings.roundDurationSeconds,callIntervalSeconds:roomSettings.callIntervalSeconds,maxPlayers:roomSettings.maxPlayers},roundIndex:1,players:{[currentUser.uid]:{email:currentUser.email||"Player",joinedAt:Date.now()}},calledNumbers:{},claims:{}};
-    return;
+    if(room!==null)return;
+    return {code,hostUid:currentUser.uid,status:"waiting",createdAt:Date.now(),settings:{entrySeconds:roomSettings.entrySeconds,roundDurationSeconds:roomSettings.roundDurationSeconds,callIntervalSeconds:roomSettings.callIntervalSeconds,maxPlayers:roomSettings.maxPlayers},roundIndex:1,players:{[currentUser.uid]:newPlayerRecord(currentUser.uid)},calledNumbers:{},claims:{}};
    });
    created=result.committed;
   }
@@ -470,55 +508,97 @@ async function createRoom(){
 async function enterRoom(code,isHost=false){
  if(!currentUser)return;
  code=String(code||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
- if(!/^[A-Z2-9]{4,8}$/.test(code)){ $("roomMessage").textContent="Enter a valid 6-character room code.";return}
+ if(!/^[A-Z2-9]{4,8}$/.test(code)){$("roomMessage").textContent="Enter a valid 4–8 character room code.";return}
  if(roomUnsubscribe){roomUnsubscribe();roomUnsubscribe=null}
  try{
   const roomRef=ref(db,`rooms/${code}`),snap=await get(roomRef);
-  if(!snap.exists()){ $("roomMessage").textContent="Room not found. Check the code.";return}
+  if(!snap.exists()){$("roomMessage").textContent="Room not found. Check the code.";return}
   const room=snap.val();
-  if(room.status==="finished"){ $("roomMessage").textContent="This room has finished.";return}
+  if(room.status==="finished"){$("roomMessage").textContent="This room has finished. Try another room.";return}
   if(!room.players||!room.players[currentUser.uid]){
-   if(room.status!=="waiting"){ $("roomMessage").textContent="Entry is closed for this round. Join the next round.";return; }
+   if(room.status!=="waiting"){$("roomMessage").textContent="Entry is closed for this round. Join the next round.";return}
    const players=room.players||{};
-   if(Object.keys(players).length>=Number(room.settings?.maxPlayers||roomSettings.maxPlayers||8)){$("roomMessage").textContent=`Room is full (maximum ${Number(room.settings?.maxPlayers||roomSettings.maxPlayers||8)} players).`;return}
-   await set(ref(db,`rooms/${code}/players/${currentUser.uid}`),{email:currentUser.email||"Player",joinedAt:Date.now()});
+   const maxPlayers=Number(room.settings?.maxPlayers||roomSettings.maxPlayers||8);
+   if(Object.keys(players).length>=maxPlayers){$("roomMessage").textContent=`Room is full (maximum ${maxPlayers} players).`;return}
+   await set(ref(db,`rooms/${code}/players/${currentUser.uid}`),newPlayerRecord(currentUser.uid));
   }
-  activeRoom={code};roomIsHost=isHost||room.hostUid===currentUser.uid;
+  activeRoom={code,...room};roomIsHost=isHost||room.hostUid===currentUser.uid;
   $("roomPanel").classList.remove("hidden");$("roomCodeDisplay").textContent=code;$("roomMessage").textContent="";
-  $("roomStatus").textContent=roomIsHost?"You are the host. Call numbers when ready.":"Joined room. Wait for the host to call numbers.";
   $("callNumberBtn").classList.toggle("hidden",!roomIsHost);
   $("roomPanel").dataset.room=code;
   roomUnsubscribe=onValue(roomRef,s=>{
-   if(!s.exists()){ $("roomStatus").textContent="Room no longer exists.";return}
-   activeRoom={code,...s.val()};
-   roomIsHost=activeRoom.hostUid===currentUser.uid;
+   if(!s.exists()){$("roomStatus").textContent="Room no longer exists.";return}
+   activeRoom={code,...s.val()};roomIsHost=activeRoom.hostUid===currentUser.uid;
    $("callNumberBtn").classList.toggle("hidden",!roomIsHost);
    const players=Object.values(activeRoom.players||{});
-   $("roomPlayers").textContent=`Players (${players.length}/${Number(activeRoom.settings?.maxPlayers||roomSettings.maxPlayers||8)}): `+players.map(p=>p.email||"Player").join(", ");
+   const maxPlayers=Number(activeRoom.settings?.maxPlayers||roomSettings.maxPlayers||8);
+   $("roomPlayers").textContent=`Players (${players.length}/${maxPlayers}): `+players.map(p=>p.name||"Player").join(", ");
    const called=Object.values(activeRoom.calledNumbers||{}).map(Number);
    $("calledNumbers").textContent="Called numbers: "+(called.length?called.join(", "):"none");
-   const entryEnd=Number(activeRoom.createdAt||Date.now())+Number(activeRoom.settings?.entrySeconds||roomSettings.entrySeconds)*1000;
+   const entryEnd=Number(activeRoom.createdAt||Date.now())+Number(activeRoom.settings?.entrySeconds||roomSettings.entrySeconds||30)*1000;
    const entryRemaining=activeRoom.status==="waiting"?Math.max(0,Math.ceil((entryEnd-Date.now())/1000)):null;
    const remaining=activeRoom.startedAt?Math.max(0,Math.ceil((Number(activeRoom.startedAt)+Number(activeRoom.settings?.roundDurationSeconds||roomSettings.roundDurationSeconds)*1000-Date.now())/1000)):null;
    $("roomStatus").textContent=activeRoom.status==="finished"?`Round finished. Winner: ${activeRoom.winnerEmail||"Not recorded"}.`:activeRoom.status==="waiting"?`Entry open: ${entryRemaining} sec. ${roomIsHost?"The round starts automatically when entry closes.":"Join before the timer ends."}`:`${roomIsHost?"Host: call numbers. ":"Game in progress. "}${remaining===null?"":"Round time remaining: "+remaining+" sec."}`;
-   if(lastResultCardKey!=="round:"+Number(activeRoom.roundIndex||1)){lastResultCardKey="round:"+Number(activeRoom.roundIndex||1);makeCard();selected.clear();winningLine=[];render();persistGame();}
+   const roundKey=activeRoom.code+":"+Number(activeRoom.roundIndex||1);
+   if(lastRenderedRoundKey!==roundKey){lastRenderedRoundKey=roundKey;lastResultCardKey=null;makeCard();selected=new Set([12]);winningLine=[];render();void persistGame();}
    $("adminRoomSummary").textContent=`${activeRoom.code}: ${players.length} player(s), status ${activeRoom.status||"waiting"}.`;
+   if(activeRoom.status==="playing"&&roomIsHost)void processRoomClaims(activeRoom);
+   if(activeRoom.status==="finished"&&activeRoom.winnerUid===currentUser.uid)void recordResult("Room demo win");
   },err=>{$("roomMessage").textContent="Room listener error. Check Firebase Rules.";console.error(err)});
  }catch(e){console.error(e);$("roomMessage").textContent="Could not join room. Check Firebase Rules and try again."}
 }
+function isValidRoomClaim(room,claimUid,claim){
+ if(!room||!claim||claim.uid!==claimUid||!room.players?.[claimUid])return false;
+ if(!Array.isArray(claim.numbers)||claim.numbers.length!==25||!Array.isArray(claim.selected)||!Array.isArray(claim.line))return false;
+ const line=claim.line.map(Number),selectedSet=new Set(claim.selected.map(Number));selectedSet.add(12);
+ const allowed=getLines().some(candidate=>candidate.length===line.length&&candidate.every((n,i)=>n===line[i]));
+ if(!allowed||!line.every(i=>Number.isInteger(i)&&i>=0&&i<25&&(selectedSet.has(i)||i===12)))return false;
+ const called=new Set(Object.values(room.calledNumbers||{}).map(Number));
+ return line.every(i=>i===12||called.has(Number(claim.numbers[i])));
+}
+async function processRoomClaims(room){
+ if(claimProcessing||!roomIsHost||!currentUser||room.status!=="playing")return;
+ const currentClaims=room.claims?.[String(room.roundIndex||1)]||{};
+ const claims=Object.entries(currentClaims).sort((a,b)=>(Number(a[1]?.claimedAt)||0)-(Number(b[1]?.claimedAt)||0));
+ const valid=claims.find(([uid,claim])=>isValidRoomClaim(room,uid,claim));
+ if(!valid)return;
+ claimProcessing=true;
+ try{
+  const [uid,claim]=valid;
+  // Host-client adjudication is for demo use only; a trusted server is required for competitive play.
+  await set(ref(db,`rooms/${room.code}/winnerUid`),uid);
+  await set(ref(db,`rooms/${room.code}/winnerEmail`),room.players?.[uid]?.name||`Player ${String(uid).slice(0,4)}`);
+  await set(ref(db,`rooms/${room.code}/finishedAt`),Date.now());
+  await set(ref(db,`rooms/${room.code}/finishReason`),"demo_claim_accepted");
+  await set(ref(db,`rooms/${room.code}/status`),"finished");
+  $("roomMessage").textContent=`Demo claim accepted for ${room.players?.[uid]?.name||"Player"}.`;
+ }catch(e){console.error(e);$("roomMessage").textContent="The host could not finish the room. Check Firebase Rules."}
+ finally{claimProcessing=false}
+}
 async function quickMatch(){
  if(!currentUser||roomBusy)return;
- roomBusy=true;$("quickMatchBtn").disabled=true;$("roomMessage").textContent="Looking for an open demo room…";
+ roomBusy=true;$("quickMatchBtn").disabled=true;$("createRoomBtn").disabled=true;
+ $("roomMessage").textContent="Looking for an open demo room…";
  try{
   const snap=await get(ref(db,"rooms"));
   if(snap.exists()){
    const rooms=snap.val();
-   const found=Object.entries(rooms).find(([code,r])=>r&&r.status==="waiting"&&r.hostUid!==currentUser.uid&&Object.keys(r.players||{}).length<Number(r.settings?.maxPlayers||roomSettings.maxPlayers||8));
+   const found=Object.entries(rooms).find(([code,r])=>r&&r.status==="waiting"&&r.hostUid!==currentUser.uid&&r.players?.[r.hostUid]&&Object.keys(r.players||{}).length<Number(r.settings?.maxPlayers||roomSettings.maxPlayers||8));
    if(found){await enterRoom(found[0],false);return}
   }
-  await createRoom();
- }catch(e){console.error(e);$("roomMessage").textContent="Quick match failed. Check Firebase Rules."}
- finally{roomBusy=false;$("quickMatchBtn").disabled=false}
+  let code,created=false;
+  for(let attempt=0;attempt<8&&!created;attempt++){
+   code=makeRoomCode();
+   const result=await runTransaction(ref(db,`rooms/${code}`),room=>{
+    if(room!==null)return;
+    return {code,hostUid:currentUser.uid,status:"waiting",createdAt:Date.now(),settings:{entrySeconds:roomSettings.entrySeconds,roundDurationSeconds:roomSettings.roundDurationSeconds,callIntervalSeconds:roomSettings.callIntervalSeconds,maxPlayers:roomSettings.maxPlayers},roundIndex:1,players:{[currentUser.uid]:newPlayerRecord(currentUser.uid)},calledNumbers:{},claims:{}};
+   });
+   created=result.committed;
+  }
+  if(!created)throw new Error("Could not allocate a room code.");
+  await enterRoom(code,true);
+ }catch(e){console.error(e);$("roomMessage").textContent="Quick match failed. Check Firebase Rules and try again."}
+ finally{roomBusy=false;$("quickMatchBtn").disabled=false;$("createRoomBtn").disabled=false}
 }
 async function callNextNumber(){
  if(!currentUser||!activeRoom||!roomIsHost||activeRoom.status!=="playing")return;
@@ -528,7 +608,7 @@ async function callNextNumber(){
   if(!available.length){$("roomMessage").textContent="All 75 numbers have been called.";return}
   const next=available[Math.floor(Math.random()*available.length)];
   await set(push(ref(db,`rooms/${activeRoom.code}/calledNumbers`)),next);
-  await update(ref(db,`rooms/${activeRoom.code}`),{status:"playing",startedAt:activeRoom.startedAt||Date.now(),lastCalledAt:Date.now()});
+  await set(ref(db,`rooms/${activeRoom.code}/lastCalledAt`),Date.now());
   $("roomMessage").textContent=`Called number: ${next}`;
  }catch(e){console.error(e);$("roomMessage").textContent="Could not call a number. Check Firebase Rules."}
 }
@@ -553,7 +633,7 @@ $("checkBtn").addEventListener("click",checkBingo);
 // Admin-managed configuration. Firebase rules must restrict /settings writes to ADMIN_UID.
 const DEFAULT_SETTINGS={maxPlayers:8,entrySeconds:30,roundDurationSeconds:180,codeLength:6,callIntervalSeconds:0,roomPrefix:"",gameTitle:"DaraBingo"};
 function cleanSettings(raw={}){
- return {maxPlayers:Math.max(2,Math.min(1000000000,Math.floor(Number(raw.maxPlayers)||8))),entrySeconds:Math.max(30,Math.min(900,Number(raw.entrySeconds)||30)),roundDurationSeconds:Math.max(30,Math.min(900,Number(raw.roundDurationSeconds)||180)),codeLength:Math.max(4,Math.min(8,Number(raw.codeLength)||6)),callIntervalSeconds:Math.max(0,Math.min(60,Number(raw.callIntervalSeconds)||0)),roomPrefix:String(raw.roomPrefix||"").toUpperCase().replace(/[^A-Z]/g,"").slice(0,3),gameTitle:String(raw.gameTitle||"DaraBingo").slice(0,40)};
+ return {maxPlayers:Math.max(2,Math.min(100000,Math.floor(Number(raw.maxPlayers)||8))),entrySeconds:Math.max(30,Math.min(900,Number(raw.entrySeconds)||30)),roundDurationSeconds:Math.max(30,Math.min(900,Number(raw.roundDurationSeconds)||180)),codeLength:Math.max(4,Math.min(8,Number(raw.codeLength)||6)),callIntervalSeconds:(Number(raw.callIntervalSeconds)||0)===0?0:Math.max(3,Math.min(60,Number(raw.callIntervalSeconds)||3)),roomPrefix:String(raw.roomPrefix||"").toUpperCase().replace(/[^A-Z]/g,"").slice(0,3),gameTitle:String(raw.gameTitle||"DaraBingo").slice(0,40)};
 }
 function displaySettings(){
  $("settingMaxPlayers").value=roomSettings.maxPlayers;$("settingEntrySeconds").value=roomSettings.entrySeconds;$("settingRoundDuration").value=roomSettings.roundDurationSeconds;$("settingCodeLength").value=roomSettings.codeLength;$("settingCallInterval").value=roomSettings.callIntervalSeconds;$("settingRoomPrefix").value=roomSettings.roomPrefix;$("settingRoomTitle").value=roomSettings.gameTitle;
@@ -573,27 +653,48 @@ $("reloadSettingsBtn").addEventListener("click",loadSettings);
 $("adminFinishRoomBtn").addEventListener("click",async()=>{
  if(!currentUser||currentUser.uid!==ADMIN_UID){$("settingsMessage").textContent="Admin access required.";return;}
  if(!activeRoom){$("settingsMessage").textContent="Join or create a room first.";return;}
- try{await update(ref(db,`rooms/${activeRoom.code}`),{status:"finished",finishedAt:Date.now(),finishReason:"admin_finished"});$("settingsMessage").textContent="Active room marked finished.";}
- catch(e){$("settingsMessage").textContent="Could not finish room. Check room rules.";}
+ try{
+  const base=`rooms/${activeRoom.code}`;
+  await set(ref(db,`${base}/finishedAt`),Date.now());
+  await set(ref(db,`${base}/finishReason`),"admin_finished");
+  await set(ref(db,`${base}/status`),"finished");
+  $("settingsMessage").textContent="Active room marked finished.";
+ }catch(e){console.error(e);$("settingsMessage").textContent="Could not finish room. Check room rules.";}
 });
 function startRoomClock(){
  if(roomTimerHandle)clearInterval(roomTimerHandle);
  roomTimerHandle=setInterval(async()=>{
-  if(!activeRoom||!roomIsHost)return;
-  const code=activeRoom.code, now=Date.now();
+  if(!activeRoom||!roomIsHost||!currentUser)return;
+  const code=activeRoom.code,now=Date.now(),base=`rooms/${code}`;
   if(activeRoom.status==="waiting"){
    const entryMs=Number(activeRoom.settings?.entrySeconds||roomSettings.entrySeconds||30)*1000;
    if(now>=Number(activeRoom.createdAt||now)+entryMs){
-    try{await runTransaction(ref(db,`rooms/${code}/status`),status=>status==="waiting"?"playing":status);
-     await update(ref(db,`rooms/${code}`),{startedAt:now,roundStartedAt:now,lastCalledAt:0});}
-    catch(e){console.warn("Could not close entry window",e)}
+    try{
+     const started=await runTransaction(ref(db,`${base}/status`),status=>status==="waiting"?"playing":undefined);
+     if(started.committed&&started.snapshot.val()==="playing"){
+      const snap=await get(ref(db,base));
+      if(snap.exists()&&snap.val().status==="playing"&&!snap.val().startedAt){
+       await set(ref(db,`${base}/startedAt`),now);
+       await set(ref(db,`${base}/roundStartedAt`),now);
+       await set(ref(db,`${base}/lastCalledAt`),0);
+      }
+     }
+    }catch(e){console.warn("Could not close entry window",e)}
    }
    return;
   }
   if(activeRoom.status==="finished"){
-   if(activeRoom.finishedAt&&now-Number(activeRoom.finishedAt)>=5000&&activeRoom.finishReason!=="admin_finished"){
-    try{await update(ref(db,`rooms/${code}`),{status:"waiting",createdAt:now,startedAt:null,roundStartedAt:null,finishedAt:null,finishReason:null,winnerUid:null,winnerEmail:null,calledNumbers:{},claims:{},roundIndex:Number(activeRoom.roundIndex||1)+1,lastCalledAt:0});}
-    catch(e){console.warn("Could not open next round",e)}
+   if(activeRoom.finishReason!=="admin_finished"&&activeRoom.finishedAt&&now-Number(activeRoom.finishedAt)>=5000&&!resettingRooms.has(code)){
+    resettingRooms.add(code);
+    try{
+     // Clear round state using leaf-level writes permitted by the rules.
+     await set(ref(db,`${base}/calledNumbers`),{});
+     await set(ref(db,`${base}/createdAt`),now);
+     await set(ref(db,`${base}/roundIndex`),Number(activeRoom.roundIndex||1)+1);
+     for(const key of ["startedAt","roundStartedAt","lastCalledAt","finishedAt","winnerUid","winnerEmail","finishReason"])await remove(ref(db,`${base}/${key}`));
+     await set(ref(db,`${base}/status`),"waiting");
+    }catch(e){console.warn("Could not open the next round",e);$("roomMessage").textContent="Could not reset the room. Check Firebase Rules."}
+    finally{resettingRooms.delete(code)}
    }
    return;
   }
@@ -603,8 +704,11 @@ function startRoomClock(){
   const interval=Number(activeRoom.settings?.callIntervalSeconds||roomSettings.callIntervalSeconds||0);
   if(interval>0&&now-Number(activeRoom.lastCalledAt||activeRoom.startedAt)>=interval*1000)await callNextNumber();
   if(remaining===0){
-   try{await runTransaction(ref(db,`rooms/${code}/status`),status=>status==="playing"?"finished":status);await update(ref(db,`rooms/${code}`),{finishedAt:Date.now(),finishReason:"time_expired"});}
-   catch(e){console.warn("Could not finish timed-out room",e)}
+   try{
+    await set(ref(db,`${base}/finishedAt`),Date.now());
+    await set(ref(db,`${base}/finishReason`),"time_expired");
+    await runTransaction(ref(db,`${base}/status`),status=>status==="playing"?"finished":undefined);
+   }catch(e){console.warn("Could not finish timed-out room",e)}
   }
  },1000);
 }
@@ -616,6 +720,7 @@ let demoPoints = 100;
 let demoWalletEntries = [];
 function renderDemoWallet(){
   $("demoBalance").textContent = String(demoPoints);
+  if($("topDemoBalance"))$("topDemoBalance").textContent=String(demoPoints);
   const body = $("demoWalletHistory");
   body.replaceChildren();
   if(!demoWalletEntries.length){
@@ -633,81 +738,72 @@ function renderDemoWallet(){
 $("addDemoPointsBtn").addEventListener("click",()=>{
   demoPoints += 25;
   demoWalletEntries.push({label:"Test points added",change:25,at:Date.now()});
-  let deferredInstallPrompt = null;
-window.addEventListener("beforeinstallprompt", event => { event.preventDefault(); deferredInstallPrompt = event; $("installAppBtn").classList.remove("hidden"); });
-const siteUrl = "https://darabingo.web.app/";
-const shareText = "Try DaraBingo — a Bingo demo using virtual points only: " + siteUrl;
-$("shareDaraBtn").addEventListener("click", async () => {
-  try { if (navigator.share) await navigator.share({title:"DaraBingo", text:shareText, url:siteUrl}); else { await navigator.clipboard.writeText(siteUrl); $("shareMessage").textContent="Website link copied."; } }
-  catch(e) { if (e.name !== "AbortError") $("shareMessage").textContent="Could not open sharing. Use Copy Website Link."; }
-});
-$("shareWhatsAppBtn").addEventListener("click", () => window.open("https://wa.me/?text="+encodeURIComponent(shareText), "_blank", "noopener"));
-$("shareTelegramBtn").addEventListener("click", () => window.open("https://t.me/share/url?url="+encodeURIComponent(siteUrl)+"&text="+encodeURIComponent("Try DaraBingo — virtual points only."), "_blank", "noopener"));
-$("copySiteBtn").addEventListener("click", async () => { try { await navigator.clipboard.writeText(siteUrl); $("shareMessage").textContent="Website link copied."; } catch(e) { $("shareMessage").textContent="Copy this link: "+siteUrl; } });
-$("installAppBtn").addEventListener("click", async () => { if (deferredInstallPrompt) { deferredInstallPrompt.prompt(); await deferredInstallPrompt.userChoice; deferredInstallPrompt=null; } else { $("shareMessage").textContent="On Android Chrome, open the browser menu (⋮) and choose Add to Home screen or Install app if available."; } });
-renderDemoWallet();
+  renderDemoWallet();
   $("walletMessage").textContent="Added 25 demo points in this browser only.";
 });
 $("resetDemoPointsBtn").addEventListener("click",()=>{
   demoPoints=100;
   demoWalletEntries.push({label:"Demo balance reset",change:0,at:Date.now()});
-  let deferredInstallPrompt = null;
-window.addEventListener("beforeinstallprompt", event => { event.preventDefault(); deferredInstallPrompt = event; $("installAppBtn").classList.remove("hidden"); });
-const siteUrl = "https://darabingo.web.app/";
-const shareText = "Try DaraBingo — a Bingo demo using virtual points only: " + siteUrl;
-$("shareDaraBtn").addEventListener("click", async () => {
-  try { if (navigator.share) await navigator.share({title:"DaraBingo", text:shareText, url:siteUrl}); else { await navigator.clipboard.writeText(siteUrl); $("shareMessage").textContent="Website link copied."; } }
-  catch(e) { if (e.name !== "AbortError") $("shareMessage").textContent="Could not open sharing. Use Copy Website Link."; }
-});
-$("shareWhatsAppBtn").addEventListener("click", () => window.open("https://wa.me/?text="+encodeURIComponent(shareText), "_blank", "noopener"));
-$("shareTelegramBtn").addEventListener("click", () => window.open("https://t.me/share/url?url="+encodeURIComponent(siteUrl)+"&text="+encodeURIComponent("Try DaraBingo — virtual points only."), "_blank", "noopener"));
-$("copySiteBtn").addEventListener("click", async () => { try { await navigator.clipboard.writeText(siteUrl); $("shareMessage").textContent="Website link copied."; } catch(e) { $("shareMessage").textContent="Copy this link: "+siteUrl; } });
-$("installAppBtn").addEventListener("click", async () => { if (deferredInstallPrompt) { deferredInstallPrompt.prompt(); await deferredInstallPrompt.userChoice; deferredInstallPrompt=null; } else { $("shareMessage").textContent="On Android Chrome, open the browser menu (⋮) and choose Add to Home screen or Install app if available."; } });
-renderDemoWallet();
+  renderDemoWallet();
   $("walletMessage").textContent="Demo balance reset to 100.";
 });
 $("saveAgentDemoBtn").addEventListener("click",()=>{
   const name=$("agentDisplayName").value.trim(),code=$("agentInviteCode").value.trim().toUpperCase();
-  if(!name||!code){$("agentMessage").textContent="Enter a demo name and invitation code.";return;}
-  $("agentMessage").textContent=`Demo profile ready for ${name} (${code}). No real commission or payment is enabled.`;
+  const method=$("agentContactMethod").value,contact=$("agentContactValue").value.trim();
+  if(!name||!code||!contact){$("agentMessage").textContent="Complete the name, invite code, and selected contact detail.";return;}
+  $("agentMessage").textContent=`Demo profile ready for ${name} (${code}). Contact method: ${method==="whatsapp"?"WhatsApp":"Telegram"}. This is not saved to Firebase; no real commission or payment is enabled.`;
 });
 document.querySelectorAll("[data-jump]").forEach(button=>{
   button.addEventListener("click",()=>{
-    // Never allow the navigation button to reveal admin tools for a non-admin.
-    if(button.dataset.jump==="adminSection" && (!currentUser || currentUser.uid!==ADMIN_UID)){
-      $("adminSection").classList.add("hidden");
+    const target=$(button.dataset.jump);
+    if(!target)return;
+    if(target.id==="adminSection"&&(!currentUser||currentUser.uid!==ADMIN_UID)){
+      $("roomMessage").textContent="The Admin panel is available only to the configured admin account.";
       return;
     }
-    const target=$(button.dataset.jump);
-    if(target){
-      if(target.id!=="adminSection") target.classList.remove("hidden");
-      target.scrollIntoView({behavior:"smooth",block:"start"});
-    }
+    target.classList.remove("hidden");
+    target.scrollIntoView({behavior:"smooth",block:"start"});
   });
 });
-let deferredInstallPrompt = null;
-window.addEventListener("beforeinstallprompt", event => { event.preventDefault(); deferredInstallPrompt = event; $("installAppBtn").classList.remove("hidden"); });
-const siteUrl = "https://darabingo.web.app/";
-const shareText = "Try DaraBingo — a Bingo demo using virtual points only: " + siteUrl;
-$("shareDaraBtn").addEventListener("click", async () => {
-  try { if (navigator.share) await navigator.share({title:"DaraBingo", text:shareText, url:siteUrl}); else { await navigator.clipboard.writeText(siteUrl); $("shareMessage").textContent="Website link copied."; } }
-  catch(e) { if (e.name !== "AbortError") $("shareMessage").textContent="Could not open sharing. Use Copy Website Link."; }
-});
-$("shareWhatsAppBtn").addEventListener("click", () => window.open("https://wa.me/?text="+encodeURIComponent(shareText), "_blank", "noopener"));
-$("shareTelegramBtn").addEventListener("click", () => window.open("https://t.me/share/url?url="+encodeURIComponent(siteUrl)+"&text="+encodeURIComponent("Try DaraBingo — virtual points only."), "_blank", "noopener"));
-$("copySiteBtn").addEventListener("click", async () => { try { await navigator.clipboard.writeText(siteUrl); $("shareMessage").textContent="Website link copied."; } catch(e) { $("shareMessage").textContent="Copy this link: "+siteUrl; } });
-$("installAppBtn").addEventListener("click", async () => { if (deferredInstallPrompt) { deferredInstallPrompt.prompt(); await deferredInstallPrompt.userChoice; deferredInstallPrompt=null; } else { $("shareMessage").textContent="On Android Chrome, open the browser menu (⋮) and choose Add to Home screen or Install app if available."; } });
 renderDemoWallet();
+ 
+// Share/install helpers. Sharing opens the user's chosen app; it does not send automatically.
+const DARA_URL="https://darabingo.web.app/";
+let deferredInstallPrompt=null;
+window.addEventListener("beforeinstallprompt",event=>{
+ event.preventDefault();
+ deferredInstallPrompt=event;
+ $("installAppBtn").textContent="Install DaraBingo";
+});
+$("shareNativeBtn").addEventListener("click",async()=>{
+ try{
+  if(navigator.share) await navigator.share({title:"DaraBingo",text:"Try DaraBingo — a Bingo demo using virtual points only.",url:DARA_URL});
+  else $("shareInstallMessage").textContent="Use WhatsApp or Telegram below, or copy the website link.";
+ }catch(e){if(e.name!=="AbortError")$("shareInstallMessage").textContent="Sharing was not available. Try another share button."}
+});
+$("shareWhatsAppBtn").addEventListener("click",()=>window.open("https://wa.me/?text="+encodeURIComponent("Try DaraBingo — Bingo demo with virtual points only: "+DARA_URL),"_blank","noopener"));
+$("shareTelegramBtn").addEventListener("click",()=>window.open("https://t.me/share/url?url="+encodeURIComponent(DARA_URL)+"&text="+encodeURIComponent("Try DaraBingo — Bingo demo with virtual points only."),"_blank","noopener"));
+$("copyLinkBtn").addEventListener("click",async()=>{
+ try{await navigator.clipboard.writeText(DARA_URL);$("shareInstallMessage").textContent="Website link copied."}
+ catch(e){$("shareInstallMessage").textContent="Copy was blocked by this browser. Website link: "+DARA_URL}
+});
+$("installAppBtn").addEventListener("click",async()=>{
+ if(deferredInstallPrompt){
+  deferredInstallPrompt.prompt();
+  await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt=null;
+ }else{
+  $("shareInstallMessage").textContent="In Chrome, open the ⋮ menu and choose Install app or Add to Home screen, if available.";
+ }
+});
  
 onAuthStateChanged(auth,async user=>{
  if(activeRoom)await leaveRoom(false);
  currentUser=user;
  $("authCard").classList.toggle("hidden",!!user);$("gameArea").classList.toggle("hidden",!user);
- if(!user){numbers=[];selected.clear();if(roomTimerHandle){clearInterval(roomTimerHandle);roomTimerHandle=null}return}
+ if(!user){numbers=[];selected.clear();$("roomPanel").classList.add("hidden");$("adminSection").classList.add("hidden");return}
  $("welcome").textContent="Welcome, "+(user.email||"Player");
- const isAdmin=user.uid===ADMIN_UID;
- $("adminSection").classList.toggle("hidden",!isAdmin);
- $("adminNavBtn").classList.toggle("hidden",!isAdmin);
+ $("adminSection").classList.toggle("hidden",user.uid!==ADMIN_UID);
  $("adminAccount").textContent=user.email||"Signed-in account";
  $("adminDbStatus").textContent="Signed in; database status is shown in Player Profile.";
  $("authMessage").textContent="";$("dbStatus").textContent="Loading your data…";
