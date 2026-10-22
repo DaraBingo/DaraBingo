@@ -70,6 +70,7 @@ footer{padding:20px;color:var(--muted);font-size:12px}
      <button type="button" class="secondary" data-jump="profileSection">👤 Profile</button>
      <button type="button" class="secondary" data-jump="demoWalletSection">🪙 Demo Wallet</button>
      <button type="button" class="secondary" data-jump="agentSection">🤝 Agent Demo</button>
+     <button type="button" class="secondary" data-jump="shareSection">📲 Share / Install</button>
      <button type="button" class="secondary hidden" id="adminNavBtn" data-jump="adminSection">🛠 Admin</button>
     </nav>
     <section class="feature-grid" aria-label="Demo overview">
@@ -111,7 +112,7 @@ footer{padding:20px;color:var(--muted);font-size:12px}
      <p id="roomMessage" class="small status" role="status"></p>
     </section>
     <div class="columns">
-     <section class="card">
+     <section class="card tab-panel" id="bingoSection">
       <h2>Your Bingo Card</h2>
       <div class="bingo-head">
        <span>B</span><span>I</span><span>N</span><span>G</span><span>O</span>
@@ -122,7 +123,7 @@ footer{padding:20px;color:var(--muted);font-size:12px}
       <p id="message" class="status" role="status">Tap numbers to mark them.</p>
       <p class="small">Mark five numbers in a row, column, or diagonal. The FREE center square counts automatically.</p>
      </section>
-     <section class="card">
+     <section class="card tab-panel" id="profileSection">
       <h2>Player Profile</h2>
       <p id="profileEmail" class="small">Email: —</p>
       <p id="profileGames">Games played: 0</p>
@@ -632,13 +633,37 @@ function renderDemoWallet(){
 $("addDemoPointsBtn").addEventListener("click",()=>{
   demoPoints += 25;
   demoWalletEntries.push({label:"Test points added",change:25,at:Date.now()});
-  renderDemoWallet();
+  let deferredInstallPrompt = null;
+window.addEventListener("beforeinstallprompt", event => { event.preventDefault(); deferredInstallPrompt = event; $("installAppBtn").classList.remove("hidden"); });
+const siteUrl = "https://darabingo.web.app/";
+const shareText = "Try DaraBingo — a Bingo demo using virtual points only: " + siteUrl;
+$("shareDaraBtn").addEventListener("click", async () => {
+  try { if (navigator.share) await navigator.share({title:"DaraBingo", text:shareText, url:siteUrl}); else { await navigator.clipboard.writeText(siteUrl); $("shareMessage").textContent="Website link copied."; } }
+  catch(e) { if (e.name !== "AbortError") $("shareMessage").textContent="Could not open sharing. Use Copy Website Link."; }
+});
+$("shareWhatsAppBtn").addEventListener("click", () => window.open("https://wa.me/?text="+encodeURIComponent(shareText), "_blank", "noopener"));
+$("shareTelegramBtn").addEventListener("click", () => window.open("https://t.me/share/url?url="+encodeURIComponent(siteUrl)+"&text="+encodeURIComponent("Try DaraBingo — virtual points only."), "_blank", "noopener"));
+$("copySiteBtn").addEventListener("click", async () => { try { await navigator.clipboard.writeText(siteUrl); $("shareMessage").textContent="Website link copied."; } catch(e) { $("shareMessage").textContent="Copy this link: "+siteUrl; } });
+$("installAppBtn").addEventListener("click", async () => { if (deferredInstallPrompt) { deferredInstallPrompt.prompt(); await deferredInstallPrompt.userChoice; deferredInstallPrompt=null; } else { $("shareMessage").textContent="On Android Chrome, open the browser menu (⋮) and choose Add to Home screen or Install app if available."; } });
+renderDemoWallet();
   $("walletMessage").textContent="Added 25 demo points in this browser only.";
 });
 $("resetDemoPointsBtn").addEventListener("click",()=>{
   demoPoints=100;
   demoWalletEntries.push({label:"Demo balance reset",change:0,at:Date.now()});
-  renderDemoWallet();
+  let deferredInstallPrompt = null;
+window.addEventListener("beforeinstallprompt", event => { event.preventDefault(); deferredInstallPrompt = event; $("installAppBtn").classList.remove("hidden"); });
+const siteUrl = "https://darabingo.web.app/";
+const shareText = "Try DaraBingo — a Bingo demo using virtual points only: " + siteUrl;
+$("shareDaraBtn").addEventListener("click", async () => {
+  try { if (navigator.share) await navigator.share({title:"DaraBingo", text:shareText, url:siteUrl}); else { await navigator.clipboard.writeText(siteUrl); $("shareMessage").textContent="Website link copied."; } }
+  catch(e) { if (e.name !== "AbortError") $("shareMessage").textContent="Could not open sharing. Use Copy Website Link."; }
+});
+$("shareWhatsAppBtn").addEventListener("click", () => window.open("https://wa.me/?text="+encodeURIComponent(shareText), "_blank", "noopener"));
+$("shareTelegramBtn").addEventListener("click", () => window.open("https://t.me/share/url?url="+encodeURIComponent(siteUrl)+"&text="+encodeURIComponent("Try DaraBingo — virtual points only."), "_blank", "noopener"));
+$("copySiteBtn").addEventListener("click", async () => { try { await navigator.clipboard.writeText(siteUrl); $("shareMessage").textContent="Website link copied."; } catch(e) { $("shareMessage").textContent="Copy this link: "+siteUrl; } });
+$("installAppBtn").addEventListener("click", async () => { if (deferredInstallPrompt) { deferredInstallPrompt.prompt(); await deferredInstallPrompt.userChoice; deferredInstallPrompt=null; } else { $("shareMessage").textContent="On Android Chrome, open the browser menu (⋮) and choose Add to Home screen or Install app if available."; } });
+renderDemoWallet();
   $("walletMessage").textContent="Demo balance reset to 100.";
 });
 $("saveAgentDemoBtn").addEventListener("click",()=>{
@@ -660,6 +685,18 @@ document.querySelectorAll("[data-jump]").forEach(button=>{
     }
   });
 });
+let deferredInstallPrompt = null;
+window.addEventListener("beforeinstallprompt", event => { event.preventDefault(); deferredInstallPrompt = event; $("installAppBtn").classList.remove("hidden"); });
+const siteUrl = "https://darabingo.web.app/";
+const shareText = "Try DaraBingo — a Bingo demo using virtual points only: " + siteUrl;
+$("shareDaraBtn").addEventListener("click", async () => {
+  try { if (navigator.share) await navigator.share({title:"DaraBingo", text:shareText, url:siteUrl}); else { await navigator.clipboard.writeText(siteUrl); $("shareMessage").textContent="Website link copied."; } }
+  catch(e) { if (e.name !== "AbortError") $("shareMessage").textContent="Could not open sharing. Use Copy Website Link."; }
+});
+$("shareWhatsAppBtn").addEventListener("click", () => window.open("https://wa.me/?text="+encodeURIComponent(shareText), "_blank", "noopener"));
+$("shareTelegramBtn").addEventListener("click", () => window.open("https://t.me/share/url?url="+encodeURIComponent(siteUrl)+"&text="+encodeURIComponent("Try DaraBingo — virtual points only."), "_blank", "noopener"));
+$("copySiteBtn").addEventListener("click", async () => { try { await navigator.clipboard.writeText(siteUrl); $("shareMessage").textContent="Website link copied."; } catch(e) { $("shareMessage").textContent="Copy this link: "+siteUrl; } });
+$("installAppBtn").addEventListener("click", async () => { if (deferredInstallPrompt) { deferredInstallPrompt.prompt(); await deferredInstallPrompt.userChoice; deferredInstallPrompt=null; } else { $("shareMessage").textContent="On Android Chrome, open the browser menu (⋮) and choose Add to Home screen or Install app if available."; } });
 renderDemoWallet();
  
 onAuthStateChanged(auth,async user=>{
