@@ -2,183 +2,71 @@
 <html lang="am">
  <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <title>DaraBingo</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>DaraBingo Shared</title>
   <style>
-:root{--navy:#17243c;--blue:#2468d8;--gold:#f5c928;--muted:#758094}
-*{box-sizing:border-box}
-body{margin:0;background:#edf0f5;color:#192033;font-family:system-ui,-apple-system,"Noto Sans Ethiopic",Arial,sans-serif}
-button,input{font:inherit}button{cursor:pointer;border:0;border-radius:12px;padding:12px 16px;font-weight:750}
-header{background:var(--navy);color:white;padding:16px;display:flex;align-items:center;justify-content:space-between;gap:10px;position:sticky;top:0;z-index:5}
-.brand{font-size:22px;font-weight:900}.brand span{color:var(--gold)}.sub{font-size:12px;color:#c6d2e8}
-.wrap{max-width:980px;margin:auto;padding:16px}.panel{background:white;border-radius:18px;padding:18px;box-shadow:0 5px 18px #17243c12;margin-bottom:15px}
-h2{font-size:20px;margin:0 0 12px}.muted{color:var(--muted);font-size:14px}.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1}
-input{width:100%;padding:13px;border:1px solid #ccd3df;border-radius:10px;margin:5px 0 12px;background:#fff}
-.primary{background:var(--blue);color:white}.secondary{background:#e8edf5;color:#24304a}.gold{background:var(--gold);color:#29220a}
-.hidden{display:none!important}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.tabs button{flex:1;min-width:100px}.tabs .active{background:var(--blue);color:white}
-.status{padding:11px 13px;border-radius:10px;background:#f1f5fa;margin:10px 0;white-space:pre-wrap}.status.error{background:#fff0f0;color:#a3202a}.status.ok{background:#eaf8ef;color:#176d3b}
-.gamegrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;max-width:500px;margin:12px auto}
-.cell{aspect-ratio:1;border-radius:9px;background:#f6f7f9;border:1px solid #d4dae4;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:clamp(14px,4vw,22px);padding:0}
-.cell.marked{background:var(--gold);border-color:#d6a900}.cell.free{background:#2869d8;color:white}.cell.head{background:var(--navy);color:white;aspect-ratio:auto;padding:8px 0;border-radius:7px}
-.history-item{padding:11px 0;border-bottom:1px solid #e8ebf0}.history-item:last-child{border:0}
-footer{text-align:center;color:#6c7688;font-size:12px;padding:15px}
-@media(min-width:720px){.columns{display:grid;grid-template-columns:1fr 1fr;gap:15px}.wrap{padding:24px}}
+*{box-sizing:border-box}body{margin:0;background:#101827;color:white;font-family:Arial;text-align:center}header{background:#087f5b;padding:18px;font-size:28px;font-weight:bold}main{max-width:800px;margin:auto;padding:12px}.card{background:#1d293b;padding:16px;border-radius:14px;margin:14px auto}input{display:block;width:100%;max-width:400px;padding:12px;margin:10px auto;font-size:16px}button{padding:11px 14px;margin:5px;border:0;border-radius:8px;background:#10b981;font-weight:bold;font-size:15px}.secondary{background:#475569;color:white}.hidden{display:none!important}.small{color:#bdc8d8;font-size:13px}.grid,.head{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;max-width:500px;margin:12px auto}.head{color:#a7f3d0;font-weight:bold}.cell{aspect-ratio:1;background:#334155;color:white;font-size:clamp(14px,4vw,22px);padding:4px;margin:0}.marked{background:#10b981;color:#062014}.free{background:#fbbf24;color:#422006}.numbers{display:flex;flex-wrap:wrap;justify-content:center;gap:5px}.ball{padding:7px;background:#334155;border-radius:7px}
 </style>
  </head>
  <body>
-  <header>
-   <div>
-    <div class="brand">
-     🎱 Dara<span>Bingo</span>
-    </div>
-    <div class="sub">የBingo የሙከራ ጨዋታ</div>
-   </div>
-   <button id="logout" class="secondary hidden">ውጣ</button>
-  </header>
-  <main class="wrap">
-   <section id="authPanel" class="panel">
-    <h2>ወደ DaraBingo ግባ</h2>
-    <p class="muted">በኢሜይል መለያ ፍጠር ወይም ወደ መለያህ ግባ።</p>
-    <div class="tabs">
-     <button id="loginTab" class="active secondary" type="button">ግባ</button>
-     <button id="signupTab" class="secondary" type="button">መለያ ፍጠር</button>
-    </div>
-    <form id="authForm">
-     <label for="email">ኢሜይል</label><input id="email" type="email" autocomplete="email" required placeholder="you@example.com"> <label for="password">የይለፍ ቃል (ቢያንስ 6 ቁምፊ)</label><input id="password" type="password" autocomplete="current-password" minlength="6" required placeholder="የይለፍ ቃል">
-     <button id="authSubmit" class="primary" type="submit" style="width:100%">ግባ</button>
-    </form>
-    <div id="authStatus" class="status" role="status">Firebase እየተዘጋጀ ነው…</div>
+  <header>🎱 DaraBingo</header>
+  <main>
+   <section id="auth" class="card">
+    <h2>ወደ DaraBingo ይግቡ</h2>
+    <input id="email" type="email" placeholder="Email"><input id="password" type="password" placeholder="Password (6+ characters)">
+    <button id="signup">መለያ ፍጠር</button>
+    <button id="login">ግባ</button>
+    <p id="authMsg" class="small"></p>
    </section>
-   <section id="appPanel" class="hidden">
-    <div class="panel">
-     <h2>እንኳን ደህና መጣህ!</h2>
-     <div id="welcome" class="muted"></div>
-     <p>የሙከራ ቀሪ ሂሳብ: <b>100 Demo Points</b></p>
-     <p class="muted">የሙከራ ነጥቦች ብቻ ናቸው። እውነተኛ ገንዘብ አይቀበልም፣ አይከማችም፣ አይከፈልም።</p>
+   <section id="game" class="hidden">
+    <div class="card">
+     <h2 id="welcome">DaraBingo</h2>
+     <button id="logout" class="secondary">ውጣ</button>
+     <p>የጋራ ጨዋታ ኮድ: <b>DARA01</b></p>
+     <p id="roomStatus">የጨዋታ ሁኔታ፦ እየተገናኘ ነው…</p>
+     <p id="players" class="small"></p>
+     <p id="lastCall">የመጨረሻ ቁጥር፦ —</p>
+     <div id="called" class="numbers"></div>
+     <p id="adminMsg" class="small"></p>
+     <button id="start" class="hidden">ጨዋታ ጀምር</button>
+     <button id="call" class="hidden">ቀጣይ ቁጥር ጥራ</button>
+     <button id="reset" class="secondary hidden">ዳግም ጀምር</button>
+     <p class="small">የማሳያ ጨዋታ ብቻ፤ እውነተኛ ገንዘብ አይጠቀምም።</p>
     </div>
-    <div class="columns">
-     <div class="panel">
-      <h2>የBingo ካርድ</h2>
-      <div id="card" class="gamegrid" aria-label="Bingo card"></div>
-      <div class="row">
-       <button id="newCard" class="secondary" type="button">አዲስ ካርድ</button>
-       <button id="checkBingo" class="gold" type="button">Bingo ፈትሽ</button>
-      </div>
-      <div id="gameStatus" class="status">ቁጥሮችን በመንካት ምልክት አድርግ። አንድ ሙሉ ረድፍ፣ አምድ ወይም ዲያጎናል ያስፈልጋል።</div>
+    <div class="card">
+     <h3>የእርስዎ Bingo ካርድ</h3>
+     <div class="head">
+      <span>B</span><span>I</span><span>N</span><span>G</span><span>O</span>
      </div>
-     <div class="panel">
-      <h2>የጨዋታ ታሪክ</h2>
-      <div id="history" class="muted">ታሪክ እየተጫነ ነው…</div>
-     </div>
+     <div id="grid" class="grid"></div>
+     <button id="newCard" class="secondary">አዲስ ካርድ</button>
+     <button id="check">Bingo አረጋግጥ</button>
+     <p id="message" class="small">የተጠሩ ቁጥሮችን ምልክት ያድርጉ።</p>
     </div>
    </section>
   </main>
-  <footer>DaraBingo • Demo only • የሙከራ ጨዋታ ብቻ</footer>
   <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
-import { getDatabase, ref, get, push, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
- 
-const firebaseConfig = {
-  apiKey: "AIzaSyCvFGMyHt3Z15DkXjgP0bRwzcOR22kzy5o",
-  authDomain: "darabingo.firebaseapp.com",
-  databaseURL: "https://darabingo-default-rtdb.firebaseio.com",
-  projectId: "darabingo",
-  storageBucket: "darabingo.firebasestorage.app",
-  messagingSenderId: "602699715656",
-  appId: "1:602699715656:web:b20a1380d030dc7e75b47d"
-};
- 
-const $ = id => document.getElementById(id);
-let auth, db, mode = "login", currentUser = null, card = [], marked = new Set(), busy = false;
-function showStatus(id, message, type = "") { const el = $(id); el.textContent = message; el.className = "status " + type; }
-function explainError(error) {
-  const code = error?.code || "";
-  const messages = {
-    "auth/email-already-in-use":"ይህ ኢሜይል አስቀድሞ ተመዝግቧል። ወደ ግባ ቀይር።",
-    "auth/invalid-email":"የኢሜይል አድራሻውን አስተካክል።",
-    "auth/weak-password":"የይለፍ ቃሉ ቢያንስ 6 ቁምፊ ይሁን።",
-    "auth/invalid-credential":"ኢሜይሉ ወይም የይለፍ ቃሉ ትክክል አይደለም።",
-    "auth/user-not-found":"መለያው አልተገኘም። መለያ ፍጠር።",
-    "auth/wrong-password":"የይለፍ ቃሉ ትክክል አይደለም።",
-    "auth/too-many-requests":"ብዙ ጊዜ ሞክረሃል። ቆይተህ እንደገና ሞክር።",
-    "auth/network-request-failed":"የኢንተርኔት ግንኙነትህን ፈትሽ።",
-    "auth/operation-not-allowed":"Firebase Console ውስጥ Email/Password Sign-in አንቃ።",
-    "auth/unauthorized-domain":"የWebsite ዶሜይንህን Firebase Authentication > Settings > Authorized domains ውስጥ ጨምር።",
-    "PERMISSION_DENIED":"Realtime Database Rules ይህን እርምጃ አይፈቅዱም።"
-  };
-  return messages[code] || `${error?.message || "ያልታወቀ ስህተት"}${code ? " (" + code + ")" : ""}`;
-}
-function renderCard() {
-  const root = $("card"); root.innerHTML = "";
-  ["B","I","N","G","O"].forEach(letter => { const el=document.createElement("div"); el.className="cell head"; el.textContent=letter; root.append(el); });
-  card.forEach((number,index) => {
-    const el=document.createElement("button");
-    el.type="button"; el.className="cell"+(index===12?" free":"")+(marked.has(index)?" marked":"");
-    el.textContent=index===12?"FREE":number; el.setAttribute("aria-pressed",String(marked.has(index)));
-    el.onclick=()=>{ if(index===12)return; marked.has(index)?marked.delete(index):marked.add(index); renderCard(); };
-    root.append(el);
-  });
-}
-function newBingoCard() {
-  const ranges=[[1,15],[16,30],[31,45],[46,60],[61,75]], columns=[];
-  for(const [min,max] of ranges){const nums=[];while(nums.length<5){const n=Math.floor(Math.random()*(max-min+1))+min;if(!nums.includes(n))nums.push(n)}columns.push(nums);}
-  card=[];for(let row=0;row<5;row++)for(let col=0;col<5;col++)card.push(columns[col][row]);
-  card[12]="FREE";marked=new Set([12]);renderCard();
-  showStatus("gameStatus","አዲስ ካርድ ተፈጥሯል። ቁጥሮችን በመንካት ምልክት አድርግ።","ok");
-}
-function hasBingo() {
-  const markedAt=i=>i===12||marked.has(i);
-  for(let row=0;row<5;row++)if([0,1,2,3,4].every(col=>markedAt(row*5+col)))return true;
-  for(let col=0;col<5;col++)if([0,1,2,3,4].every(row=>markedAt(row*5+col)))return true;
-  if([0,1,2,3,4].every(i=>markedAt(i*5+i)))return true;
-  if([0,1,2,3,4].every(i=>markedAt(i*5+(4-i))))return true;
-  return false;
-}
-async function loadHistory() {
-  if(!currentUser)return;
-  const box=$("history");box.textContent="ታሪክ እየተጫነ ነው…";
-  try {
-    const historyQuery=query(ref(db,`users/${currentUser.uid}/history`),orderByChild("at"),limitToLast(20));
-    const snapshot=await get(historyQuery);box.innerHTML="";
-    if(!snapshot.exists()){box.textContent="ገና የጨዋታ ታሪክ የለም።";return;}
-    const items=[];snapshot.forEach(child=>items.push(child.val()));
-    items.sort((a,b)=>(b.at||0)-(a.at||0));
-    for(const item of items){const line=document.createElement("div");line.className="history-item";line.textContent=`${item.result||"ጨዋታ"} • ${item.at?new Date(item.at).toLocaleString():"ቀን የለም"}`;box.append(line);}
-  } catch(error) { box.textContent="ታሪክን ማሳየት አልተቻለም፦ "+explainError(error); }
-}
-async function saveHistory(result) {
-  if(!currentUser)throw new Error("መጀመሪያ ወደ መለያህ ግባ።");
-  const record={result,at:Date.now(),card:card.map((number,index)=>index===12?"FREE":number),selected:[...marked]};
-  await push(ref(db,`users/${currentUser.uid}/history`),record);
-}
-function setBusy(value) { busy=value; $("authSubmit").disabled=value; $("authSubmit").textContent=value?"ቆይ…":(mode==="login"?"ግባ":"መለያ ፍጠር"); }
-$("loginTab").onclick=()=>{mode="login";$("loginTab").classList.add("active");$("signupTab").classList.remove("active");$("password").autocomplete="current-password";setBusy(false);showStatus("authStatus","ኢሜይልና የይለፍ ቃል አስገባ።");};
-$("signupTab").onclick=()=>{mode="signup";$("signupTab").classList.add("active");$("loginTab").classList.remove("active");$("password").autocomplete="new-password";setBusy(false);showStatus("authStatus","አዲስ መለያ ለመፍጠር ትክክለኛ ኢሜይልና ቢያንስ 6 ቁምፊ ያለው የይለፍ ቃል አስገባ።");};
-$("authForm").addEventListener("submit",async event=>{
-  event.preventDefault();if(busy)return;
-  const email=$("email").value.trim(),password=$("password").value;setBusy(true);showStatus("authStatus","እየተሞከረ ነው…");
-  try { if(mode==="signup")await createUserWithEmailAndPassword(auth,email,password);else await signInWithEmailAndPassword(auth,email,password); }
-  catch(error){showStatus("authStatus",explainError(error),"error");}
-  finally{setBusy(false);}
-});
-$("logout").onclick=async()=>{try{await signOut(auth);}catch(error){showStatus("authStatus",explainError(error),"error");}};
-$("newCard").onclick=newBingoCard;
-$("checkBingo").onclick=async()=>{
-  if(!currentUser){showStatus("gameStatus","መጀመሪያ ግባ።","error");return;}
-  if(!hasBingo()){showStatus("gameStatus","Bingo አልተገኘም። ሙሉ ረድፍ፣ አምድ ወይም ዲያጎናል ምልክት አድርግ።");return;}
-  try{await saveHistory("Demo win");showStatus("gameStatus","🎉 Bingo! የሙከራ ውጤት ተመዝግቧል።","ok");await loadHistory();}
-  catch(error){showStatus("gameStatus","ውጤቱን ማስቀመጥ አልተቻለም፦ "+explainError(error),"error");}
-};
-try {
-  const app=initializeApp(firebaseConfig);auth=getAuth(app);db=getDatabase(app);
-  showStatus("authStatus","Firebase ተዘጋጅቷል። ግባ ወይም መለያ ፍጠር።","ok");
-  onAuthStateChanged(auth,async user=>{
-    currentUser=user;
-    $("authPanel").classList.toggle("hidden",!!user);$("appPanel").classList.toggle("hidden",!user);$("logout").classList.toggle("hidden",!user);
-    if(user){$("welcome").textContent=user.email||"ተጠቃሚ";newBingoCard();await loadHistory();}
-  });
-} catch(error) { showStatus("authStatus","Firebase ማስጀመር አልተቻለም፦ "+explainError(error),"error"); }
+import{initializeApp}from"https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+import{getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+import{getDatabase,ref,get,set,update,onValue,runTransaction}from"https://www.gstatic.com/firebasejs/12.4.0/firebase-database.js";
+const cfg={apiKey:"AIzaSyCvFGMyHt3Z15DkXjgP0bRwzcOR22kzy5o",authDomain:"darabingo.firebaseapp.com",databaseURL:"https://darabingo-default-rtdb.firebaseio.com",projectId:"darabingo",storageBucket:"darabingo.firebasestorage.app",messagingSenderId:"602699715656",appId:"1:602699715656:web:b20a1380d030dc7e75b47d"};
+const ADMIN="PlCOAljMt8eStqqBxaNobXuqEH93",ROOM="DARA01",app=initializeApp(cfg),auth=getAuth(app),db=getDatabase(app),$=id=>document.getElementById(id);
+let user=null,room={},stopRoom=null,card=[],marked=new Set([12]);
+function pick(a,b){let x=Array.from({length:b-a+1},(_,i)=>a+i);for(let i=x.length-1;i>0;i--){let j=Math.random()*(i+1)|0;[x[i],x[j]]=[x[j],x[i]]}return x.slice(0,5)}
+function newCard(){let c=[pick(1,15),pick(16,30),pick(31,45),pick(46,60),pick(61,75)];card=[];for(let r=0;r<5;r++)for(let k=0;k<5;k++)card.push(r===2&&k===2?"FREE":c[k][r]);marked=new Set([12]);draw();saveCard()}
+function draw(){let g=$("grid");g.replaceChildren();card.forEach((n,i)=>{let b=document.createElement("button");b.className="cell"+(marked.has(i)?" marked":"")+(i===12?" free":"");b.textContent=n;b.onclick=()=>{if(i===12)return;let called=new Set(Object.values(room.calledNumbers||{}).map(Number));if(!called.has(Number(n))){$("message").textContent="ይህ ቁጥር ገና አልተጠራም።";return}marked.has(i)?marked.delete(i):marked.add(i);draw();saveCard()};g.append(b)})}
+async function saveCard(){if(!user||card.length!==25)return;try{await set(ref(db,`rooms/${ROOM}/players/${user.uid}/card`),card);await set(ref(db,`rooms/${ROOM}/players/${user.uid}/marked`),[...marked])}catch(e){console.warn(e)}}
+function showRoom(v){room=v||{};let p=room.players||{};$("players").textContent="ተጫዋቾች፦ "+Object.values(p).filter(x=>x&&x.joinedAt).length;let nums=Object.values(room.calledNumbers||{}).map(Number);$("called").replaceChildren();nums.forEach(n=>{let s=document.createElement("span");s.className="ball";s.textContent=n;$("called").append(s)});$("lastCall").textContent="የመጨረሻ ቁጥር፦ "+(nums.at(-1)??"—");$("roomStatus").textContent=room.status==="playing"?"ጨዋታው ተጀምሯል":"አስተዳዳሪውን ይጠብቁ";let a=user?.uid===ADMIN;$("start").classList.toggle("hidden",!a||room.status==="playing");$("call").classList.toggle("hidden",!a||room.status!=="playing");$("reset").classList.toggle("hidden",!a)}
+async function enter(){let rr=ref(db,"rooms/"+ROOM);if(user.uid===ADMIN)await runTransaction(rr,v=>v||{hostUid:ADMIN,status:"waiting",players:{},calledNumbers:{}});await set(ref(db,`rooms/${ROOM}/players/${user.uid}/joinedAt`),Date.now());await set(ref(db,`rooms/${ROOM}/players/${user.uid}/email`),user.email||"Player");if(stopRoom)stopRoom();stopRoom=onValue(rr,s=>{if(s.exists())showRoom(s.val());else $("roomStatus").textContent="አስተዳዳሪው መጀመሪያ መግባት አለበት።"},e=>{$("roomStatus").textContent="Firebase Rules ፈቃድ ችግር።";console.error(e)});let s=await get(ref(db,`rooms/${ROOM}/players/${user.uid}/card`));if(s.exists()&&Array.isArray(s.val())){card=s.val();let m=await get(ref(db,`rooms/${ROOM}/players/${user.uid}/marked`));marked=new Set(m.exists()?m.val():[12]);marked.add(12);draw()}else newCard()}
+$("signup").onclick=async()=>{try{await createUserWithEmailAndPassword(auth,$("email").value.trim(),$("password").value)}catch(e){$("authMsg").textContent=e.message}};
+$("login").onclick=async()=>{try{await signInWithEmailAndPassword(auth,$("email").value.trim(),$("password").value)}catch(e){$("authMsg").textContent=e.message}};
+$("logout").onclick=()=>signOut(auth);$("newCard").onclick=newCard;
+$("start").onclick=async()=>{if(user?.uid===ADMIN)try{await update(ref(db,"rooms/"+ROOM),{status:"playing",calledNumbers:{},startedAt:Date.now()})}catch(e){$("adminMsg").textContent="Firebase Rules ያስተካክሉ"}};
+$("call").onclick=async()=>{if(user?.uid!==ADMIN||room.status!=="playing")return;let old=Object.values(room.calledNumbers||{}).map(Number),avail=Array.from({length:75},(_,i)=>i+1).filter(n=>!old.includes(n));if(!avail.length){$("adminMsg").textContent="ሁሉም ቁጥሮች ተጠርተዋል";return}let n=avail[Math.random()*avail.length|0];try{await runTransaction(ref(db,"rooms/"+ROOM+"/calledNumbers"),v=>{v=v||{};v[String(Date.now())]=n;return v})}catch(e){$("adminMsg").textContent="Firebase Rules ያስተካክሉ"}};
+$("reset").onclick=async()=>{if(user?.uid===ADMIN)await update(ref(db,"rooms/"+ROOM),{status:"waiting",calledNumbers:{},startedAt:null})};
+function lines(){let x=[];for(let r=0;r<5;r++)x.push(Array.from({length:5},(_,c)=>r*5+c));for(let c=0;c<5;c++)x.push(Array.from({length:5},(_,r)=>r*5+c));x.push([0,6,12,18,24],[4,8,12,16,20]);return x}
+$("check").onclick=()=>{let w=lines().find(line=>line.every(i=>marked.has(i)||i===12));if(!w){$("message").textContent="ገና Bingo አልሆነም";return}let called=new Set(Object.values(room.calledNumbers||{}).map(Number));$("message").textContent=w.every(i=>i===12||called.has(Number(card[i])))?"🎉 Bingo! የማሳያ ድል ተገኝቷል።":"በመስመሩ ያሉ ቁጥሮች ሁሉ መጠራት አለባቸው።"};
+onAuthStateChanged(auth,async u=>{user=u;$("auth").classList.toggle("hidden",!!u);$("game").classList.toggle("hidden",!u);if(!u){if(stopRoom)stopRoom();stopRoom=null;return}$("welcome").textContent="እንኳን ደህና መጡ፣ "+(u.email||"Player");await enter()});
 </script>
-</body>
+ </body>
 </html>
